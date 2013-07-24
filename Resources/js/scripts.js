@@ -1,7 +1,11 @@
 var database = new Database();
 var sidebar = new Sidebar();
-sidebar.addItem(2013, 7, 22);
-sidebar.addItem(2013, 7, 19);
-sidebar.addItem(2013, 7, 25);
-sidebar.addItem(2013, 7, 1);
-sidebar.addItem(2013, 7, 16);
+
+var lists = database.getLists();
+for(var i = 0; i < lists.length; i++) {
+	sidebar.addItem(lists[i].year, lists[i].month, lists[i].day)
+}
+
+sidebar.onItemSelect = function(year, month, day) {
+	console.log(year, month, day);
+};

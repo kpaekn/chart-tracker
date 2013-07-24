@@ -1,38 +1,71 @@
 function Sidebar() {
+	var thisObj = this;
 	var MONTHS = [0, 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 	var DAY_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 	var sidebar = $('.sidebar');
 	var lists = {};
 
+	sidebar.delegate('.section li a', 'click', function(e) {
+		if(thisObj.hasOwnProperty('onItemSelect')) {
+			var date = $(e.currentTarget).find('span').html().split('/');
+			thisObj.onItemSelect(date[2], date[0], date[1]);
+		}
+	});
+	sidebar.delegate('h2 a', 'click', function(e) {
+		var link = $(e.currentTarget);
+		link.html((link.html() == 'hide') ? 'show' : 'hide');
+		link.parent().next().slideToggle(200);
+	});
+
 	// private functions
 	function sortList(list, attr) {
 		var obj = {}, keys = [], len;
-		$(list).each(function(i, el) {
-			console.log(el);
-			obj[$(el).attr('data-day')] = $(el);
+		$(list).find('li').each(function(i, el) {
+			var k = Number($(el).attr('data-day'));
+			obj[k] = $(el);
+			keys.push(k);
 		});
 
-		for(k in obj) {
-			if(obj.hasOwnProperty(k)) {
-				keys.push(k);
-			}
-		}
 		keys.sort();
 		len = keys.length;
-		for(i = 0; i < len; i++) {
+		for(var i = len - 1; i >= 0; i--) {
 			k = keys[i];
 			$(list).append(obj[k]);
 		}
 	}
+	function sortSections() {
+		var obj = {}, keys = [], len;
+		sidebar.find('>.section').each(function(i, el) {
+			var month = $(el).attr('data-month');
+			if(month.length == 1)
+				month = '0' + month;
+			var k = $(el).attr('data-year') + month;
+			obj[k] = $(el);
+			keys.push(k);
+		});
+
+		keys.sort();
+		len = keys.length;
+		for(var i = len - 1; i >= 0; i--) {
+			k = keys[i];
+			sidebar.append(obj[k]);
+		}
+	}
+	function getKey(year, month) {
+		return year + '-' + month;
+	}
 
 	// public functions
 	this.addItem = function(year, month, day) {
-		var key = year + '-' + month;
+		var key = getKey(year, month);
 		if(!lists[key]) {
 			// create new list
-			var h2 = $('<h2>' + MONTHS[month] + ' <a href="#">hide</a></h2>');
-			var ul = $('<ul class="section"></ul>');
-			sidebar.append(h2, ul);
+			var section = $('<div class="section" data-year="' + year + '" data-month="' + month + '"></div>');
+			var h2 = $('<h2>' + MONTHS[month] + ' ' + year + ' <a href="#">hide</a></h2>');
+			var ul = $('<ul></ul>');
+			sidebar.append(section);
+			section.append(h2, ul);
+			sortSections();
 			lists[key] = ul;
 		}
 
@@ -40,23 +73,19 @@ function Sidebar() {
 		if(ul.find('li[data-day="' + day + '"]').length > 0)
 			return console.log('item already exists.');
 
-
 		var label = month + '/' + day + '/' + year;
-		var subLabel = DAY_OF_WEEK[(new Date()).getDay()];
-		var item = $('<li data-day="' + day + '"><a href="#">' + label + ' <small>' + subLabel + '</small></a></li>');
+		var date = new Date();
+		var subLabel = DAY_OF_WEEK[(new Date(year, month - 1, day)).getDay()];
+		var item = $('<li data-day="' + day + '"><a href="#"><span>' + label + '</span> <small>' + subLabel + '</small></a></li>');
 		ul.append(item);
 		sortList(ul);
 	};
-	return this;
 
-	this.adddddList = function(title) {
-		var header = $('<h2>' + title + ' <a href="#">hide</a></h2>');
-		var list = $('<ul class="section"></ul>');
-		sidebar.append(header, list);
-		lists[title] = list;
+	this.removeItem = function(year, month, day) {
+		var key = getKey(year, month);
+		if(lists[key]) {
+			lists[key].find('li[data-day="' + day + '"]').remove();
+		}
 	};
-	this.addIddddtem = function(listName, label, subLabel) {
-		var item = $('<li><a href="#">' + label + ' <small>' + subLabel + '</small></a></li>');
-		lists[listName].append(item);
-	};
+	return this;
 }
