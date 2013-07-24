@@ -1,0 +1,20 @@
+#appname:Chart Tracker
+#appid:com.kpaek.charttracker
+#publisher:Naaupo
+#image:default_app_logo.png
+#url:kpaek.com
+#guid:3a8967a7-f138-489d-855b-2b260dc5dfe6
+#desc:No description provided
+#type:desktop
+runtime:1.3.1-beta
+app:1.3.1-beta
+codec:1.3.1-beta
+database:1.3.1-beta
+filesystem:1.3.1-beta
+media:1.3.1-beta
+monkey:1.3.1-beta
+network:1.3.1-beta
+platform:1.3.1-beta
+process:1.3.1-beta
+ui:1.3.1-beta
+worker:1.3.1-beta
