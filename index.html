@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!-- Styles -->
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="css/style.css">
+	</head>
+	<body>
+		<div class="container row-fluid">
+			<div class="sidebar span3">
+				<h1>Lists</h1>
+				<ul>
+					<li><a href="#"><i class="icon-plus"></i> Create List</a></li>
+				</ul>
+			</div>
+			<div class="content span9">
+				<h2></h2>
+				<form id="check-out-form">
+					<fieldset>
+						<span>
+							<label>Last Name</label>
+							<input class="last-name" type="text"/>
+						</span>
+						<span>
+							<label>First Name</label>
+							<input class="first-name" type="text"/>
+						</span>
+						<span>
+							<label>Birthday (Optional)</label>
+							<input class="birthday" type="text"/>
+						</span>
+						<span>
+							<label>Location</label>
+							<input class="location" type="text"/>
+						</span>
+					</fieldset>
+					<fieldset class="btn-group">
+						<button class="btn btn-small" type="reset">Reset</button>
+						<button class="btn btn-small btn-primary" type="submit"><i class="icon-ok icon-white"></i> Check Out</button>
+					</fieldset>
+				</form>
+			</div>
+		</div>
+
+		<!-- Scripts -->
+		<script type="text/javascript" src="js/jquery.min.js"></script>
+		<script type="text/javascript" src="js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/database.js"></script>
+		<script type="text/javascript" src="js/constants.js"></script>
+		<script type="text/javascript" src="js/sidebar.js"></script>
+		<script type="text/javascript" src="js/content.js"></script>
+		<script type="text/javascript" src="js/scripts.js"></script>
+	</body>
+</html>

@@ -1,7 +1,5 @@
 function Sidebar() {
 	var thisObj = this;
-	var MONTHS = [0, 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-	var DAY_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 	var sidebar = $('.sidebar');
 	var lists = {};
 
@@ -15,6 +13,13 @@ function Sidebar() {
 		var link = $(e.currentTarget);
 		link.html((link.html() == 'hide') ? 'show' : 'hide');
 		link.parent().next().slideToggle(200);
+	});
+
+	// load lists from database
+	DATABASE.getLists(function(lists) {
+		for(var i = 0; i < lists.length; i++) {
+			thisObj.addItem(lists[i].year, lists[i].month, lists[i].day)
+		}
 	});
 
 	// private functions
@@ -70,7 +75,7 @@ function Sidebar() {
 		}
 
 		var ul = lists[key];
-		if(ul.find('li[data-day="' + day + '"]').length > 0)
+		if(ul.find('li[data-day="' + day + '"]').length > 0) 
 			return console.log('item already exists.');
 
 		var label = month + '/' + day + '/' + year;

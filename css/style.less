@@ -1,3 +1,12 @@
+.round-corner(@radius) {
+	border-radius: @radius;
+	-webkit-border-radius: @radius;
+}
+
+html, body, .container {
+	height: 100%;
+}
+
 .sidebar {
 	background-color: #f1f1f1;
 	border-right: 1px solid #e5e5e5;
@@ -63,8 +72,14 @@
 	h2 {
 		margin: 0;
 	}
-}
-
-.row-fluid input[type="text"] {
-	width: 100%;
+	form {
+		fieldset {
+			span {
+				display: inline-block;
+				input {
+					width: 150px;
+				}
+			}
+		}
+	}
 }
