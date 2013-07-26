@@ -1,29 +1,44 @@
 function Sidebar() {
 	var thisObj = this,
 		sidebar = $('.sidebar'),
-		lists = {},
-		createListBtn = sidebar.find('.create-list'),
-		createListModal = $('#create-list-modal'),
-		outstandingBtn = sidebar.find('.outstanding');
+		lists = {};
+	var createListBtn = sidebar.find('.create-list'),
+		createListModal = $('#create-list-modal');
+		createListModal.select = createListModal.find('select');
+		createListModal.createBtn = createListModal.find('.create');
+	var outstandingBtn = sidebar.find('.outstanding');
 
+	// show modal, create options
 	createListBtn.click(function(e) {
+		var date = new Date(),
+			i, opt, val;
+		createListModal.select.empty();
+		for(i = 0; i < 10; i++) {
+			opt = $('<option></option>');
+			val = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear() + ' - ' + DAY_OF_WEEK[date.getDay()];
+			opt.html(val).val(val);
+			createListModal.select.append(opt);
+			date.setDate(date.getDate() + 1);
+		}
+		createListModal.select.selectpicker('refresh');
 		createListModal.modal('show');
 	});
-	createListModal.month = createListModal.find('.month');
-	createListModal.day = createListModal.find('.day');
-	createListModal.year = createListModal.find('.year');
 
-	createListModal.month.change(function(e) {
-		var year = createListModal.year.val(),
-			month = Number(createListModal.month.val()),
-			date = new Date(year, month, 0),
-			days = date.getDate(),
-			i;
-		createListModal.day.html('');
-		for(i = 1; i <= days; i++) {
-			createListModal.day.append('<option value="' + i + '">' + i + '</option>');
-		}
-		createListModal.day.selectpicker('refresh');
+	// event listener for creating list
+	createListModal.createBtn.click(function(e) {
+		var val = createListModal.select.val(),
+			vals = val.split(' - ')[0].split('/'),
+			year = vals[2],
+			month = vals[0],
+			day = vals[1];
+		database.createList(year, month, day, function(data) {
+			if(!data.success) {
+				alert(data.message);
+			} else {
+				thisObj.addItem(data.insertId, year, month, day);
+				createListModal.modal('hide');
+			}
+		});
 	});
 
 	// event listener for outstanding item selection
@@ -35,8 +50,9 @@ function Sidebar() {
 	// event listener for list selection
 	sidebar.delegate('.section li a', 'click', function(e) {
 		if(thisObj.onItemSelect) {
-			var date = $(e.currentTarget).find('span').html().split('/');
-			thisObj.onItemSelect(date[2], date[0], date[1]);
+			var date = $(e.currentTarget).find('span').html().split('/'),
+				id = $(e.currentTarget).attr('data-id');
+			thisObj.onItemSelect(id, date[2], date[0], date[1]);
 		}
 	});
 	// slide toggle lists
@@ -47,9 +63,9 @@ function Sidebar() {
 	});
 
 	// load lists from database
-	DATABASE.getLists(function(lists) {
+	database.getLists(function(lists) {
 		for(var i = 0; i < lists.length; i++) {
-			thisObj.addItem(lists[i].year, lists[i].month, lists[i].day)
+			thisObj.addItem(lists[i].id, lists[i].year, lists[i].month, lists[i].day)
 		}
 	});
 
@@ -92,7 +108,7 @@ function Sidebar() {
 	}
 
 	// public functions
-	this.addItem = function(year, month, day) {
+	this.addItem = function(id, year, month, day) {
 		var key = getKey(year, month);
 		if(!lists[key]) {
 			// create new list
@@ -112,7 +128,7 @@ function Sidebar() {
 		var label = month + '/' + day + '/' + year;
 		var date = new Date();
 		var subLabel = DAY_OF_WEEK[(new Date(year, month - 1, day)).getDay()];
-		var item = $('<li data-day="' + day + '"><a href="#"><span>' + label + '</span> <small>' + subLabel + '</small></a></li>');
+		var item = $('<li data-day="' + day + '"><a href="#" data-id="' + id + '"><span>' + label + '</span> <small>' + subLabel + '</small></a></li>');
 		ul.append(item);
 		sortList(ul);
 	};

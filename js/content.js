@@ -1,14 +1,36 @@
 function Content() {
-	var content = $('.content');
-	var header = content.find('h2');
-	var checkOutForm = content.find('#check-out-form');
-	checkOutForm.lastName = checkOutForm.find('.last-name');
-	checkOutForm.firstName = checkOutForm.find('.first-name');
-	checkOutForm.birthday = checkOutForm.find('.birthday');
+	var selectedListId = -1,
+		content = $('.content');
 
+	var header = content.find('h2');
+		header.deleteBtn = header.find('.delete-list');
+	var deleteListModal = $('#delete-list-modal');
+		deleteListModal.deleteBtn = deleteListModal.find('.delete');
+
+	var checkOutForm = content.find('#check-out-form');
+		checkOutForm.lastName = checkOutForm.find('.last-name');
+		checkOutForm.firstName = checkOutForm.find('.first-name');
+		checkOutForm.birthday = checkOutForm.find('.birthday');
+
+	header.deleteBtn.click(function(e) {
+		if(selectedListId !== -1) {
+			deleteListModal.modal('show');
+		}
+	});
+	deleteListModal.deleteBtn.click(function(e) {
+		console.log(selectedListId)
+		if(selectedListId !== -1) {
+			database.deleteList(selectedListId, function() {
+				deleteListModal.modal('hide');
+				content.fadeOut();
+			});
+		}
+	});
+
+	// auto complete for selecting chart
 	checkOutForm.lastName.typeahead({
 		source: function(query, process) {
-			DATABASE.getCharts(function(charts) {
+			database.getCharts(function(charts) {
 				for(var i = 0; i < charts.length; i++) {
 					charts[i] = charts[i].last + ', ' + charts[i].first + ((charts[i].birthday) ? (' (' + charts[i].birthday + ')') : '');
 				}
@@ -39,17 +61,21 @@ function Content() {
 
 	// private functions
 	var setHeader = function(text) {
-		header.html(text);
+		header.find('span').html(text);
 	};
 
 	// public functions
-	this.loadList = function(year, month, day) {
-		content.css('display', 'block');
+	this.loadList = function(id, year, month, day) {
+		selectedListId = id;
+		content.hide();
+		content.fadeIn();
 		content.removeClass('outstanding').addClass('normal');
 		setHeader(MONTHS[month] + ' ' + day + ', ' + year);
 	};
 	this.loadOutstanding = function() {
-		content.css('display', 'block');
+		selectedListId = -1;
+		content.hide();
+		content.fadeIn();
 		content.removeClass('normal').addClass('outstanding');
 		setHeader('Outstanding Charts');
 	};

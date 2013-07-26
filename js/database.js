@@ -15,7 +15,7 @@ function Database() {
 			row = rows.item(i);
 			for(j = 0; j < numProps; j++) {
 				prop = props[j];
-				obj[prop] = row[props];
+				obj[prop] = row[prop];
 			}
 			list.push(obj);
 		}
@@ -23,22 +23,42 @@ function Database() {
 	};
 
 	// public functions
-	this.getLists = function(process) {
+	this.getLists = function(callback) {
 		db.transaction(function(tx) {
 			tx.executeSql('SELECT * FROM lists', [], function(tx, results) {
 				var lists = getList(results.rows, ['id', 'year', 'month', 'day']);
-				// dummy data
-				lists.push({
-					id: 10,
-					year: 2013,
-					month: 7,
-					day: 22
-				});
-				process(lists);
+				callback(lists);
 			});
 		});
 	};
-	this.getCharts = function(process) {
+	this.createList = function(year, month, day, callback) {
+		db.transaction(function(tx) {
+			tx.executeSql('SELECT * FROM lists WHERE year=? and month=? and day=?', [year, month, day], function(tx, results) {
+				if(results.rows.length > 0) {
+					callback({
+						success: false,
+						message: 'A list for ' + month + '/' + day + '/' + year + ' already exists.'
+					});
+				} else {
+					tx.executeSql('INSERT INTO lists(year, month, day) VALUES(?, ?, ?)', [year, month, day], function(tx, results) {
+						callback({
+							success: true,
+							insertId: results.insertId
+						});
+					});
+				}
+			});
+		});
+	};
+	this.deleteList = function(id, callback) {
+		db.transaction(function(tx) {
+			tx.executeSql('DELETE FROM lists WHERE id=?', [id], function(tx, results) {
+				callback();
+			});
+		});
+	};
+
+	this.getCharts = function(callback) {
 		db.transaction(function(tx) {
 			tx.executeSql('SELECT * FROM charts', [], function(tx, results) {
 				var charts = getList(results.rows, ['id', 'last', 'first', 'birthday']);
@@ -49,11 +69,11 @@ function Database() {
 					first: 'JOHN',
 					birthday: ''
 				});
-				process(charts);
+				callback(charts);
 			});
 		});
 	};
-	this.getLocations = function(process) {
+	this.getLocations = function(callback) {
 		db.transaction(function(tx) {
 			tx.executeSql('SELECT * FROM locations', [], function(tx, results) {
 				var locations = getList(results.row, ['id', 'name']);
@@ -62,7 +82,7 @@ function Database() {
 					id: 563,
 					name: 'FRONT DESK'
 				});
-				process(locations);
+				callback(locations);
 			});
 		});
 	};

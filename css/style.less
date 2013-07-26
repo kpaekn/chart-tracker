@@ -78,12 +78,18 @@ html, body {
 
 .content {
 	display: none;
+	.header .delete-list {
+		display: none;
+	}
 	&.normal {
 		#check-out-form {
 			display: block;
 		}
 		.header {
 			height: @header-height-normal;
+			.delete-list {
+				display: inline-block;
+			}
 		}
 		.records {
 			top: @header-height-normal;
