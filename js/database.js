@@ -5,10 +5,6 @@ function Database() {
 	db.transaction(function(tx) {
 		tx.executeSql('CREATE TABLE IF NOT EXISTS lists (id INTEGER PRIMARY KEY, year INTEGER, month INTEGER, day INTEGER)');
 
-		tx.executeSql('DROP IF EXISTS TABLE charts');
-		tx.executeSql('DROP IF EXISTS TABLE locations');
-		tx.executeSql('DROP IF EXISTS TABLE charts_checked_out');
-
 		tx.executeSql('CREATE TABLE IF NOT EXISTS charts (id INTEGER PRIMARY KEY, first VARCHAR(50), last VARCHAR(50), birthday VARCHAR(50))');
 		tx.executeSql('CREATE TABLE IF NOT EXISTS locations (id INTEGER PRIMARY KEY, name VARCHAR(50))');
 		tx.executeSql('CREATE TABLE IF NOT EXISTS charts_checked_out (id INTEGER PRIMARY KEY, list_id, INTEGER, chart_id INTEGER, location_id INTEGER, check_out_time BIGINT, return_time BIGINT default -1, notes VARCHAR(255) default "")');
@@ -94,12 +90,7 @@ function Database() {
 	this.getLocations = function(callback) {
 		db.transaction(function(tx) {
 			tx.executeSql('SELECT * FROM locations', [], function(tx, results) {
-				var locations = getList(results.row, ['id', 'name']);
-				// dummy data
-				locations.push({
-					id: 563,
-					name: 'FRONT DESK'
-				});
+				var locations = getList(results.rows, ['id', 'name']);
 				callback(locations);
 			});
 		});
