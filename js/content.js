@@ -23,6 +23,7 @@ function Content() {
 		checkOutForm.birthday = checkOutForm.find('.birthday');
 		checkOutForm.location = checkOutForm.find('.location');
 
+	// deleting lists
 	header.deleteBtn.click(function(e) {
 		if(selectedList) {
 			deleteListModal.modal('show');
@@ -65,6 +66,19 @@ function Content() {
 			return lastName;
 		}
 	});
+
+	// auto complet for selecting location
+	checkOutForm.location.typeahead({
+		source: function(query, process) {
+			database.getLocations(function(locations) {
+				for(var i = 0; i < locations.length; i++) {
+					locations[i] = locations[i].name;
+				}
+				process(locations);
+			});
+		}
+	});
+
 	// checkout form
 	checkOutForm.submit(function(e) {
 		e.preventDefault();
