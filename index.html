@@ -4,6 +4,7 @@
 		<!-- Styles -->
 		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 		<link rel="stylesheet" type="text/css" href="css/bootstrap-select.css">
+		<link rel="stylesheet" type="text/css" href="css/jquery.qtip.min.css">
 		<link rel="stylesheet" type="text/css" href="css/style.css">
 	</head>
 	<body>
@@ -11,7 +12,7 @@
 			<h1>Lists</h1>
 			<ul>
 				<li><a href="#" class="create-list"><i class="icon-plus"></i> Create List</a></li>
-				<li><a href="#" class="outstanding"><i class="icon-warning-sign"></i> Outstanding Charts</a></li>
+				<li><a href="#" class="outstanding"><i class="icon-exclamation-sign"></i> Outstanding Charts</a></li>
 			</ul>
 		</div>
 		<div class="content hidden">
@@ -49,7 +50,25 @@
 			</div>
 			<div class="records">
 				<ul>
-					<li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li><li>test</li>
+					<li>
+						<div class="btn-group">
+							<button class="btn btn-mini btn-danger delete" title="delete this record"><i class="icon-remove icon-white"></i></button>
+							<button class="btn btn-mini return" title="return this chart"><i class="icon-ok"></i></button>
+						</div>
+						<div class="name">
+							SMITH, JOHN <small>9/13/82</small>
+						</div>
+						<div class="location">
+							FRONT DESK
+						</div>
+						<div class="check-out-time">
+							9:53a
+						</div>
+						<div class="arrow"><i class="icon-arrow-right"></i></div>
+						<div class="return-time">
+							Not Returned
+						</div>
+					</li>
 				</ul>
 			</div>
 		</div>
@@ -87,6 +106,7 @@
 
 		<!-- Scripts -->
 		<script type="text/javascript" src="js/jquery.min.js"></script>
+		<script type="text/javascript" src="js/jquery.qtip.min.js"></script>
 		<script type="text/javascript" src="js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="js/bootstrap-select.min.js"></script>
 		<script type="text/javascript" src="js/database.js"></script>
