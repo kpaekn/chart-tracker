@@ -137,6 +137,11 @@ function Sidebar() {
 		var key = getKey(year, month);
 		if(lists[key]) {
 			lists[key].find('li[data-day="' + day + '"]').remove();
+			if(lists[key].find('li').length == 0) {
+				lists[key].prev().remove();
+				lists[key].remove();
+				lists[key] = null;
+			}
 		}
 	};
 	return this;

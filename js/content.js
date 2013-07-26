@@ -1,5 +1,5 @@
 function Content() {
-	var selectedListId = -1,
+	var selectedList,
 		content = $('.content');
 
 	var header = content.find('h2');
@@ -13,15 +13,15 @@ function Content() {
 		checkOutForm.birthday = checkOutForm.find('.birthday');
 
 	header.deleteBtn.click(function(e) {
-		if(selectedListId !== -1) {
+		if(selectedList) {
 			deleteListModal.modal('show');
 		}
 	});
 	deleteListModal.deleteBtn.click(function(e) {
-		console.log(selectedListId)
-		if(selectedListId !== -1) {
-			database.deleteList(selectedListId, function() {
+		if(selectedList) {
+			database.deleteList(selectedList.id, function() {
 				deleteListModal.modal('hide');
+				sidebar.removeItem(selectedList.year, selectedList.month, selectedList.day);
 				content.fadeOut();
 			});
 		}
@@ -66,18 +66,25 @@ function Content() {
 
 	// public functions
 	this.loadList = function(id, year, month, day) {
-		selectedListId = id;
-		content.hide();
-		content.fadeIn();
-		content.removeClass('outstanding').addClass('normal');
-		setHeader(MONTHS[month] + ' ' + day + ', ' + year);
+		selectedList = {
+			id: id,
+			year: year,
+			month: month,
+			day: day
+		};
+		content.fadeOut(400, function() {
+			content.removeClass('outstanding').addClass('normal');
+			setHeader(MONTHS[month] + ' ' + day + ', ' + year);
+			content.fadeIn();
+		});
 	};
 	this.loadOutstanding = function() {
-		selectedListId = -1;
-		content.hide();
-		content.fadeIn();
-		content.removeClass('normal').addClass('outstanding');
-		setHeader('Outstanding Charts');
+		selectedList = null;
+		content.fadeOut(400, function() {
+			content.removeClass('normal').addClass('outstanding');
+			setHeader('Outstanding Charts');
+			content.fadeIn();
+		});
 	};
 
 	return this;
