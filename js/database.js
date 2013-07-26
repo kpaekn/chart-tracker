@@ -5,9 +5,9 @@ function Database() {
 	db.transaction(function(tx) {
 		tx.executeSql('CREATE TABLE IF NOT EXISTS lists (id INTEGER PRIMARY KEY, year INTEGER, month INTEGER, day INTEGER)');
 
-		tx.executeSql('DROP TABLE charts');
-		tx.executeSql('DROP TABLE locations');
-		tx.executeSql('DROP TABLE charts_checked_out');
+		tx.executeSql('DROP IF EXISTS TABLE charts');
+		tx.executeSql('DROP IF EXISTS TABLE locations');
+		tx.executeSql('DROP IF EXISTS TABLE charts_checked_out');
 
 		tx.executeSql('CREATE TABLE IF NOT EXISTS charts (id INTEGER PRIMARY KEY, first VARCHAR(50), last VARCHAR(50), birthday VARCHAR(50))');
 		tx.executeSql('CREATE TABLE IF NOT EXISTS locations (id INTEGER PRIMARY KEY, name VARCHAR(50))');

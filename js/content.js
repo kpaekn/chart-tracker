@@ -82,6 +82,7 @@ function Content() {
 					} else {
 						records.addChart(data.id)
 					}
+					checkOutForm[0].reset();
 				});	
 			}
 		}
@@ -103,6 +104,7 @@ function Content() {
 		content.fadeOut(400, function() {
 			content.removeClass('outstanding').addClass('normal');
 			setHeader(MONTHS[month] + ' ' + day + ', ' + year);
+			checkOutForm[0].reset();
 			database.getChartsCheckedOut(id, function(charts) {
 				console.log(charts);
 				content.fadeIn();
