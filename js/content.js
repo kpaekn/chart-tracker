@@ -1,6 +1,6 @@
 function Content() {
 	var content = $('.content');
-	var header = content.find('>h2');
+	var header = content.find('h2');
 	var checkOutForm = content.find('#check-out-form');
 	checkOutForm.lastName = checkOutForm.find('.last-name');
 	checkOutForm.firstName = checkOutForm.find('.first-name');
@@ -34,7 +34,7 @@ function Content() {
 	});
 	checkOutForm.submit(function(e) {
 		e.preventDefault();
-		// checkOutChart()
+		console.log('check out chart');
 	});
 
 	// private functions
@@ -44,7 +44,15 @@ function Content() {
 
 	// public functions
 	this.loadList = function(year, month, day) {
+		content.css('display', 'block');
+		content.removeClass('outstanding').addClass('normal');
 		setHeader(MONTHS[month] + ' ' + day + ', ' + year);
 	};
+	this.loadOutstanding = function() {
+		content.css('display', 'block');
+		content.removeClass('normal').addClass('outstanding');
+		setHeader('Outstanding Charts');
+	};
+
 	return this;
 }

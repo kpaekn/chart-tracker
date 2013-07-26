@@ -1,14 +1,45 @@
 function Sidebar() {
-	var thisObj = this;
-	var sidebar = $('.sidebar');
-	var lists = {};
+	var thisObj = this,
+		sidebar = $('.sidebar'),
+		lists = {},
+		createListBtn = sidebar.find('.create-list'),
+		createListModal = $('#create-list-modal'),
+		outstandingBtn = sidebar.find('.outstanding');
 
+	createListBtn.click(function(e) {
+		createListModal.modal('show');
+	});
+	createListModal.month = createListModal.find('.month');
+	createListModal.day = createListModal.find('.day');
+	createListModal.year = createListModal.find('.year');
+
+	createListModal.month.change(function(e) {
+		var year = createListModal.year.val(),
+			month = Number(createListModal.month.val()),
+			date = new Date(year, month, 0),
+			days = date.getDate(),
+			i;
+		createListModal.day.html('');
+		for(i = 1; i <= days; i++) {
+			createListModal.day.append('<option value="' + i + '">' + i + '</option>');
+		}
+		createListModal.day.selectpicker('refresh');
+	});
+
+	// event listener for outstanding item selection
+	outstandingBtn.click(function(e) {
+		if(thisObj.onOutstandingSelect) {
+			thisObj.onOutstandingSelect();
+		}
+	});
+	// event listener for list selection
 	sidebar.delegate('.section li a', 'click', function(e) {
-		if(thisObj.hasOwnProperty('onItemSelect')) {
+		if(thisObj.onItemSelect) {
 			var date = $(e.currentTarget).find('span').html().split('/');
 			thisObj.onItemSelect(date[2], date[0], date[1]);
 		}
 	});
+	// slide toggle lists
 	sidebar.delegate('h2 a', 'click', function(e) {
 		var link = $(e.currentTarget);
 		link.html((link.html() == 'hide') ? 'show' : 'hide');
