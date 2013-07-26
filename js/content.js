@@ -1,6 +1,16 @@
+function Records() {
+	var records = $('.records');
+
+	this.addChart = function(id) {
+		console.log('add record')
+	};
+
+	return this;
+}
 function Content() {
 	var selectedList,
-		content = $('.content');
+		content = $('.content'),
+		records = new Records();
 
 	var header = content.find('h2');
 		header.deleteBtn = header.find('.delete-list');
@@ -11,6 +21,7 @@ function Content() {
 		checkOutForm.lastName = checkOutForm.find('.last-name');
 		checkOutForm.firstName = checkOutForm.find('.first-name');
 		checkOutForm.birthday = checkOutForm.find('.birthday');
+		checkOutForm.location = checkOutForm.find('.location');
 
 	header.deleteBtn.click(function(e) {
 		if(selectedList) {
@@ -54,9 +65,26 @@ function Content() {
 			return lastName;
 		}
 	});
+	// checkout form
 	checkOutForm.submit(function(e) {
 		e.preventDefault();
-		console.log('check out chart');
+		if(selectedList) {
+			var last = checkOutForm.lastName.val(),
+				first = checkOutForm.firstName.val(),
+				birthday = checkOutForm.birthday.val(),
+				location = checkOutForm.location.val();
+			if(!last || !first || !location) {
+				alert('Last name, first name, and location are required.');
+			} else {
+				database.checkOutChart(selectedList.id, last, first, birthday, location, function(data) {
+					if(!data.success) {
+						alert(data.message);
+					} else {
+						records.addChart(data.id)
+					}
+				});	
+			}
+		}
 	});
 
 	// private functions
@@ -75,7 +103,10 @@ function Content() {
 		content.fadeOut(400, function() {
 			content.removeClass('outstanding').addClass('normal');
 			setHeader(MONTHS[month] + ' ' + day + ', ' + year);
-			content.fadeIn();
+			database.getChartsCheckedOut(id, function(charts) {
+				console.log(charts);
+				content.fadeIn();
+			});
 		});
 	};
 	this.loadOutstanding = function() {

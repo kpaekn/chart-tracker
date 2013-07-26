@@ -1,10 +1,17 @@
 function Database() {
+	var thisObj = this;
 	var db = openDatabase('mydb', '1.0', 'chart system', 2 * 1024 * 1024);
 	// initial create
 	db.transaction(function(tx) {
 		tx.executeSql('CREATE TABLE IF NOT EXISTS lists (id INTEGER PRIMARY KEY, year INTEGER, month INTEGER, day INTEGER)');
+
+		tx.executeSql('DROP TABLE charts');
+		tx.executeSql('DROP TABLE locations');
+		tx.executeSql('DROP TABLE charts_checked_out');
+
 		tx.executeSql('CREATE TABLE IF NOT EXISTS charts (id INTEGER PRIMARY KEY, first VARCHAR(50), last VARCHAR(50), birthday VARCHAR(50))');
 		tx.executeSql('CREATE TABLE IF NOT EXISTS locations (id INTEGER PRIMARY KEY, name VARCHAR(50))');
+		tx.executeSql('CREATE TABLE IF NOT EXISTS charts_checked_out (id INTEGER PRIMARY KEY, list_id, INTEGER, chart_id INTEGER, location_id INTEGER, check_out_time BIGINT, return_time BIGINT default -1, notes VARCHAR(255) default "")');
 	})
 
 	// private functions
@@ -62,17 +69,28 @@ function Database() {
 		db.transaction(function(tx) {
 			tx.executeSql('SELECT * FROM charts', [], function(tx, results) {
 				var charts = getList(results.rows, ['id', 'last', 'first', 'birthday']);
-				// dummy data
-				charts.push({
-					id: 63,
-					last: 'SMITH',
-					first: 'JOHN',
-					birthday: ''
-				});
 				callback(charts);
 			});
 		});
 	};
+	this.createChart = function(last, first, birthday, callback) {
+		db.transaction(function(tx) {
+			tx.executeSql('SELECT * FROM charts WHERE last=? AND first=? AND birthday=?', [last, first, birthday], function(tx, results) {
+				if(results.rows.length > 0) {
+					callback({
+						id: results.rows.item(0).id
+					});
+				} else {
+					tx.executeSql('INSERT INTO charts(last, first, birthday) VALUES(?, ?, ?)', [last, first, birthday], function(tx, results) {
+						callback({
+							id: results.insertId
+						});
+					});
+				}
+			});
+		});
+	};
+
 	this.getLocations = function(callback) {
 		db.transaction(function(tx) {
 			tx.executeSql('SELECT * FROM locations', [], function(tx, results) {
@@ -84,6 +102,65 @@ function Database() {
 				});
 				callback(locations);
 			});
+		});
+	};
+	this.createLocation = function(name, callback) {
+		db.transaction(function(tx) {
+			tx.executeSql('SELECT * FROM locations WHERE name=?', [name], function(tx, results) {
+				if(results.rows.length > 0) {
+					callback({
+						id: results.rows.item(0).id
+					});
+				} else {
+					tx.executeSql('INSERT INTO locations(name) VALUES(?)', [name], function(tx, results) {
+						callback({
+							id: results.insertId
+						});
+					});
+				}
+			});
+		});
+	};
+
+	this.getChartsCheckedOut = function(id, callback) {
+		db.transaction(function(tx) {
+			tx.executeSql('SELECT CCO.*, C.first, C.last, C.birthday, L.name as location FROM charts_checked_out CCO, charts C, locations L WHERE list_id=?', [id], function(tx, results) {
+				var charts = getList(results.rows, ['return_time', 'check_out_time', 'notes', 'last', 'first', 'birthday', 'location']);
+				callback(charts);
+			});
+		});
+	};
+	this.checkOutChart = function(listId, last, first, birthday, location, callback) {
+		var chartId = -1, locationId = -1;
+		var checkOut = function() {
+			if(chartId !== -1 && locationId !== -1) {
+				db.transaction(function(tx) {
+					tx.executeSql('SELECT * FROM charts_checked_out WHERE chart_id=? AND return_time=-1', [chartId], function(tx, results) {
+						if(results.rows.length > 0) {
+							callback({
+								success: false,
+								message: 'That chart is already checked out.'
+							});
+						} else {
+							var currTime = (new Date).getTime();
+							tx.executeSql('INSERT INTO charts_checked_out(list_id, chart_id, location_id, check_out_time) VALUES(?, ?, ?, ?)', [listId, chartId, locationId, currTime], function(tx, results) {
+								callback({
+									success: true,
+									id: results.insertId
+								});
+							});
+						}
+					});
+				});
+			}
+		};
+		thisObj.createChart(last, first, birthday, function(data) {
+			chartId = data.id;
+			checkOut(chartId, locationId);
+		});
+		thisObj.createLocation(location, function(data) {
+			locationId = data.id;
+			checkOut(chartId, locationId);
 		});
 	};
 	
