@@ -146,14 +146,49 @@ html, body {
 			margin: 0;
 			li {
 				border-bottom: 1px solid #f1f1f1;
+				line-height: 22px;
+				overflow: auto;
 				padding: 3px 6px;
+				>div {
+					float: left;
+					&.btn-group {
+						text-align: center;
+						width: 70px;
+					}
+					&.name {
+						width: 200px;
+						small {
+							font-size: 8pt;
+							font-weight: bold;
+						}
+					}
+					&.location {
+						width: 150px;
+					}
+					&.check-out-time {
+						text-align: right;
+						width: 60px;
+					}
+					&.arrow {
+						text-align: center;
+						width: 20px;
+					}
+					&.return-time {
+						width: 85px;
+					}
+				}
 			}
 		}
 	}
 }
 
+// fix scrolling modal for dropdowns
 .modal {
 	.modal-body {
 		overflow-y: visible;
 	}
+}
+// fix visual glitch
+.btn-group > .btn + .btn {
+	margin-left: 0;
 }
