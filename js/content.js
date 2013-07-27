@@ -158,7 +158,6 @@ function Content() {
 			setHeader(MONTHS[month] + ' ' + day + ', ' + year);
 			checkOutForm[0].reset();
 			database.getChartsCheckedOut(id, function(charts) {
-				console.log(charts);
 				var i, c;
 				records.removeAllItems();
 				for(i = 0; i < charts.length; i++) {
@@ -174,6 +173,7 @@ function Content() {
 		content.fadeOut(400, function() {
 			content.removeClass('normal').addClass('outstanding');
 			setHeader('Outstanding Charts');
+			records.removeAllItems();
 			content.fadeIn();
 		});
 	};
