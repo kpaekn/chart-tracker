@@ -168,18 +168,18 @@ html, body {
 						}
 					}
 					&.location {
-						width: 150px;
+						width: 140px;
 					}
 					&.check-out-time {
 						text-align: right;
-						width: 60px;
+						width: 100px;
 					}
 					&.arrow {
 						text-align: center;
 						width: 20px;
 					}
 					&.return-time {
-						width: 95px;
+						width: 100px;
 					}
 					&.notes {
 						float: none;
@@ -193,6 +193,15 @@ html, body {
 							text-overflow: ellipsis;
 							white-space: nowrap;
 						}
+					}
+				}
+				&.returned {
+					opacity: 0.5;
+					.name, .location {
+						text-decoration: line-through;
+					}
+					.notes .btn, .btn-group .return {
+						display: none;
 					}
 				}
 			}
@@ -213,4 +222,7 @@ html, body {
 // fix visual glitch
 .btn-group > .btn + .btn {
 	margin-left: 0;
+}
+.btn, {
+	border-radius: 0 !important;
 }

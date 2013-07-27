@@ -1,4 +1,6 @@
 function Records() {
+	var items = {};
+
 	var records = $('.records');
 		records.list = records.find('ul');
 
@@ -29,18 +31,26 @@ function Records() {
 			return 'Not Returned';
 
 		var date = new Date(time),
+			month = date.getMonth() + 1,
+			day = date.getDate(),
 			hour = date.getHours(),
 			min = date.getMinutes(),
 			ampm = (hour < 12) ? 'a' : 'p';
 		hour = (hour % 12 == 0) ? 12 : (hour % 12);
 		min = (min < 10) ? ('0' + min) : min;
-		return hour + ':' + min + ampm;
+		return month + '/' + day + '@' + hour + ':' + min + ampm;
 	}
 
 	// public functions
 	this.addItem = function(id, last, first, birthday, location, checkOutTime, returnTime, notesText) {
 		var item = $('<li data-id="' + id + '"></li>'),
-			btnGroup = $('<div class="btn-group"></div>'),
+			key = last + first + birthday;
+		item.attr('data-key', key);
+		if(returnTime !== -1) {
+			item.addClass('returned');
+		}
+
+		var btnGroup = $('<div class="btn-group"></div>'),
 			deleteBtn = $('<button class="btn btn-mini btn-danger delete" title="Delete this record."><i class="icon-remove icon-white"></i></button>'),
 			returnBtn = $('<button class="btn btn-mini return" title="Return this chart."><i class="icon-ok"></i></button>');
 		btnGroup.append(deleteBtn, returnBtn);
@@ -55,6 +65,15 @@ function Records() {
 		var notes = $('<div class="notes"></div>')
 			notesBtn = $('<button class="btn btn-mini" title="Edit note."><i class="icon-pencil"></i></button>'),
 			notesBody = $('<span>' + notesText + '</span>');
+		notesBody.qtip({
+			content: function(e) {
+				return $(e.currentTarget).html();
+			},
+			position: {
+				my: 'right bottom',
+				at: 'left center'
+			}
+		});
 		notes.append(notesBtn, notesBody);
 
 		item.append(btnGroup, name, location, cot, arrow, ret, notes);
@@ -64,7 +83,35 @@ function Records() {
 				at: 'top center'
 			}
 		});
-		records.list.append(item);
+		deleteBtn.click(function(e) {
+			database.deleteRecord(id, function() {
+				item.remove();
+			});
+		});
+		returnBtn.click(function(e) {
+			database.returnChart(id, function(data) {
+				item.addClass('returned');
+				ret.html(formatDate(data.returnTime));
+			});
+		});
+
+		if(records.list.find('li').length == 0) {
+			records.list.append(item);
+		} else {
+			var added = false;
+			records.list.find('li').each(function(i, el) {
+				if(!added) {
+					var k = $(el).attr('data-key');
+					if(key < k) {
+						$(el).before(item);
+						added = true;
+					}	
+				}
+			});
+			if(!added) {
+				records.list.append(item);
+			}
+		}
 	};
 	this.removeAllItems = function() {
 		records.list.empty();
@@ -128,6 +175,8 @@ function Content() {
 			birthday = birthday.replace(/[\(\)]/g, '');
 			checkOutForm.firstName.val(firstName);
 			checkOutForm.birthday.val(birthday);
+
+			checkOutForm.location.focus();
 			return lastName;
 		}
 	});

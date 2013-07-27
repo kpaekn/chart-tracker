@@ -128,8 +128,6 @@ function Database() {
 				db.transaction(function(tx) {
 					tx.executeSql('SELECT * FROM charts_checked_out WHERE chart_id=? AND return_time=-1', [chartId], function(tx, results) {
 						if(results.rows.length > 0) {
-
-							console.log(results.rows.item(0).list_id);
 							callback({
 								success: false,
 								message: 'That chart is already checked out.'
@@ -157,6 +155,23 @@ function Database() {
 			checkOut(chartId, locationId);
 		});
 	};
+	this.deleteRecord = function(id, callback) {
+		db.transaction(function(tx) {
+			tx.executeSql('DELETE FROM charts_checked_out WHERE id=?', [id], function(tx) {
+				callback();
+			});
+		});
+	};
+	this.returnChart = function(id, callback) {
+		db.transaction(function(tx) {
+			var currTime = (new Date).getTime();
+			tx.executeSql('UPDATE charts_checked_out SET return_time=? WHERE id=?', [currTime, id], function(tx, results) {
+				callback({
+					returnTime: currTime
+				});
+			});
+		});
+	}
 
 	this.updateNotes = function(id, notes, callback) {
 		db.transaction(function(tx) {
