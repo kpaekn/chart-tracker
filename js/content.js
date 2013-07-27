@@ -1,9 +1,46 @@
 function Records() {
 	var records = $('.records');
+		records.list = records.find('ul');
 
-	this.addChart = function(id) {
-		console.log('add record')
+	function formatDate(time) {
+		if(time == -1)
+			return 'Not Returned';
+
+		var date = new Date(time),
+			hour = date.getHours(),
+			min = date.getMinutes(),
+			ampm = (hour < 12) ? 'a' : 'p';
+		hour = (hour % 12 == 0) ? 12 : (hour % 12);
+		min = (min < 10) ? ('0' + min) : min;
+		return hour + ':' + min + ampm;
+	}
+
+	this.addItem = function(id, last, first, birthday, location, checkOutTime, returnTime, notes) {
+		var item = $('<li data-id="' + id + '"></li>'),
+			btnGroup = $('<div class="btn-group"></div>'),
+			deleteBtn = $('<button class="btn btn-mini btn-danger delete" title="Delete this record"><i class="icon-remove icon-white"></i></button>'),
+			returnBtn = $('<button class="btn btn-mini return" title="Return this chart"><i class="icon-ok"></i></button>');
+		btnGroup.append(deleteBtn, returnBtn);
+		btnGroup.find('.btn').qtip({
+			position: {
+				my: 'bottom center',
+				at: 'top center'
+			}
+		});
+
+		var name = $('<div class="name">' + last + ', ' + first + ' <small>' + birthday + '</small>' + '</div>'),
+			location = $('<div class="location">' + location + '</div>');
+
+		var cot = $('<div class="check-out-time">' + formatDate(checkOutTime) + '</div>'),
+			arrow = $('<div class="arrow"><i class="icon-arrow-right"></i></div>'),
+			ret = $('<div class="return-time">' + formatDate(returnTime) + '</div>');
+
+		item.append(btnGroup, name, location, cot, arrow, ret);
+		records.list.append(item);
 	};
+	this.removeAllItems = function() {
+		records.list.empty();
+	}
 
 	return this;
 }
@@ -83,10 +120,10 @@ function Content() {
 	checkOutForm.submit(function(e) {
 		e.preventDefault();
 		if(selectedList) {
-			var last = checkOutForm.lastName.val(),
-				first = checkOutForm.firstName.val(),
-				birthday = checkOutForm.birthday.val(),
-				location = checkOutForm.location.val();
+			var last = checkOutForm.lastName.val().toUpperCase(),
+				first = checkOutForm.firstName.val().toUpperCase(),
+				birthday = checkOutForm.birthday.val().toUpperCase(),
+				location = checkOutForm.location.val().toUpperCase();
 			if(!last || !first || !location) {
 				alert('Last name, first name, and location are required.');
 			} else {
@@ -94,8 +131,9 @@ function Content() {
 					if(!data.success) {
 						alert(data.message);
 					} else {
-						records.addChart(data.id)
+						records.addItem(data.id, last, first, birthday, location, data.check_out_time, -1, '');
 					}
+					checkOutForm.lastName.focus();
 					checkOutForm[0].reset();
 				});	
 			}
@@ -121,6 +159,12 @@ function Content() {
 			checkOutForm[0].reset();
 			database.getChartsCheckedOut(id, function(charts) {
 				console.log(charts);
+				var i, c;
+				records.removeAllItems();
+				for(i = 0; i < charts.length; i++) {
+					c = charts[i];
+					records.addItem(c.id, c.last, c.first, c.birthday, c.location, c.check_out_time, c.return_time, c.notes);
+				}
 				content.fadeIn();
 			});
 		});

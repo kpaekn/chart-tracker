@@ -5,6 +5,10 @@ function Database() {
 	db.transaction(function(tx) {
 		tx.executeSql('CREATE TABLE IF NOT EXISTS lists (id INTEGER PRIMARY KEY, year INTEGER, month INTEGER, day INTEGER)');
 
+		tx.executeSql('DROP TABLE charts');
+		tx.executeSql('DROP TABLE locations');
+		tx.executeSql('DROP TABLE charts_checked_out');
+
 		tx.executeSql('CREATE TABLE IF NOT EXISTS charts (id INTEGER PRIMARY KEY, first VARCHAR(50), last VARCHAR(50), birthday VARCHAR(50))');
 		tx.executeSql('CREATE TABLE IF NOT EXISTS locations (id INTEGER PRIMARY KEY, name VARCHAR(50))');
 		tx.executeSql('CREATE TABLE IF NOT EXISTS charts_checked_out (id INTEGER PRIMARY KEY, list_id, INTEGER, chart_id INTEGER, location_id INTEGER, check_out_time BIGINT, return_time BIGINT default -1, notes VARCHAR(255) default "")');
@@ -115,8 +119,9 @@ function Database() {
 
 	this.getChartsCheckedOut = function(id, callback) {
 		db.transaction(function(tx) {
-			tx.executeSql('SELECT CCO.*, C.first, C.last, C.birthday, L.name as location FROM charts_checked_out CCO, charts C, locations L WHERE list_id=?', [id], function(tx, results) {
-				var charts = getList(results.rows, ['return_time', 'check_out_time', 'notes', 'last', 'first', 'birthday', 'location']);
+			tx.executeSql('SELECT CCO.*, C.first, C.last, C.birthday, L.name as location FROM charts_checked_out CCO, charts C, locations L WHERE list_id=? AND L.id=CCO.location_id AND C.id=CCO.chart_id', [id], function(tx, results) {
+				var charts = getList(results.rows, ['id', 'return_time', 'check_out_time', 'notes', 'last', 'first', 'birthday', 'location']);
+				console.log(charts);
 				callback(charts);
 			});
 		});
@@ -137,7 +142,8 @@ function Database() {
 							tx.executeSql('INSERT INTO charts_checked_out(list_id, chart_id, location_id, check_out_time) VALUES(?, ?, ?, ?)', [listId, chartId, locationId, currTime], function(tx, results) {
 								callback({
 									success: true,
-									id: results.insertId
+									id: results.insertId,
+									check_out_time: currTime
 								});
 							});
 						}
