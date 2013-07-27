@@ -17,7 +17,7 @@
 		</div>
 		<div class="content hidden">
 			<div class="header">
-				<h2><span>Title</span> <button class="delete-list btn btn-small btn-danger"><i class="icon-remove icon-white"></i> Delete List</button></h2>
+				<h2><span>Title</span> <button class="delete-list btn btn-small btn-danger" title="Delete this list."><i class="icon-remove icon-white"></i> Delete List</button></h2>
 				<form id="check-out-form">
 					<fieldset>
 						<span>
@@ -37,9 +37,12 @@
 							<input class="location" type="text"/>
 						</span>
 					</fieldset>
-					<fieldset class="btn-group">
-						<button class="btn btn-small" type="reset">Reset</button>
-						<button class="btn btn-small btn-primary" type="submit"><i class="icon-ok icon-white"></i> Check Out</button>
+					<fieldset>
+						<div class="btn-group">
+							<button class="btn btn-small" type="reset">Reset</button>
+							<button class="btn btn-small btn-primary" type="submit"><i class="icon-ok icon-white"></i> Check Out</button>
+						</div>
+						<button class="btn btn-small print" title="Print the history of charts checked out and returned.">Print</button>
 					</fieldset>
 				</form>
 				<form id="outstanding-form">

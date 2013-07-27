@@ -41,8 +41,8 @@ function Records() {
 	this.addItem = function(id, last, first, birthday, location, checkOutTime, returnTime, notesText) {
 		var item = $('<li data-id="' + id + '"></li>'),
 			btnGroup = $('<div class="btn-group"></div>'),
-			deleteBtn = $('<button class="btn btn-mini btn-danger delete" title="Delete this record"><i class="icon-remove icon-white"></i></button>'),
-			returnBtn = $('<button class="btn btn-mini return" title="Return this chart"><i class="icon-ok"></i></button>');
+			deleteBtn = $('<button class="btn btn-mini btn-danger delete" title="Delete this record."><i class="icon-remove icon-white"></i></button>'),
+			returnBtn = $('<button class="btn btn-mini return" title="Return this chart."><i class="icon-ok"></i></button>');
 		btnGroup.append(deleteBtn, returnBtn);
 
 		var name = $('<div class="name">' + last + ', ' + first + ' <small>' + birthday + '</small>' + '</div>'),
@@ -53,7 +53,7 @@ function Records() {
 			ret = $('<div class="return-time">' + formatDate(returnTime) + '</div>');
 
 		var notes = $('<div class="notes"></div>')
-			notesBtn = $('<button class="btn btn-mini" title="Edit note"><i class="icon-pencil"></i></button>'),
+			notesBtn = $('<button class="btn btn-mini" title="Edit note."><i class="icon-pencil"></i></button>'),
 			notesBody = $('<span>' + notesText + '</span>');
 		notes.append(notesBtn, notesBody);
 
