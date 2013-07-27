@@ -2,6 +2,28 @@ function Records() {
 	var records = $('.records');
 		records.list = records.find('ul');
 
+	var editNoteModal = $('#edit-note-modal');
+		editNoteModal.textarea = editNoteModal.find('textarea');
+		editNoteModal.saveBtn = editNoteModal.find('.save');
+
+	records.list.delegate('li .notes .btn', 'click', function(e) {
+		var btn = $(e.currentTarget), 
+			notes = btn.next(),
+			id = btn.attr('data-id');
+
+		editNoteModal.textarea.val(notes.html());
+		editNoteModal.modal('show');
+		editNoteModal.saveBtn.off('click');
+		editNoteModal.saveBtn.click(function(e) {
+			var newNotes = editNoteModal.textarea.val();
+			database.updateNotes(id, newNotes, function() {
+				notes.html(newNotes);
+				editNoteModal.modal('hide');
+			});
+		});
+	});
+
+	// private functions
 	function formatDate(time) {
 		if(time == -1)
 			return 'Not Returned';
@@ -15,18 +37,13 @@ function Records() {
 		return hour + ':' + min + ampm;
 	}
 
-	this.addItem = function(id, last, first, birthday, location, checkOutTime, returnTime, notes) {
+	// public functions
+	this.addItem = function(id, last, first, birthday, location, checkOutTime, returnTime, notesText) {
 		var item = $('<li data-id="' + id + '"></li>'),
 			btnGroup = $('<div class="btn-group"></div>'),
 			deleteBtn = $('<button class="btn btn-mini btn-danger delete" title="Delete this record"><i class="icon-remove icon-white"></i></button>'),
 			returnBtn = $('<button class="btn btn-mini return" title="Return this chart"><i class="icon-ok"></i></button>');
 		btnGroup.append(deleteBtn, returnBtn);
-		btnGroup.find('.btn').qtip({
-			position: {
-				my: 'bottom center',
-				at: 'top center'
-			}
-		});
 
 		var name = $('<div class="name">' + last + ', ' + first + ' <small>' + birthday + '</small>' + '</div>'),
 			location = $('<div class="location">' + location + '</div>');
@@ -35,7 +52,18 @@ function Records() {
 			arrow = $('<div class="arrow"><i class="icon-arrow-right"></i></div>'),
 			ret = $('<div class="return-time">' + formatDate(returnTime) + '</div>');
 
-		item.append(btnGroup, name, location, cot, arrow, ret);
+		var notes = $('<div class="notes"></div>')
+			notesBtn = $('<button class="btn btn-mini" title="Edit note"><i class="icon-pencil"></i></button>'),
+			notesBody = $('<span>' + notesText + '</span>');
+		notes.append(notesBtn, notesBody);
+
+		item.append(btnGroup, name, location, cot, arrow, ret, notes);
+		item.find('.btn').attr('data-id', id).qtip({
+			position: {
+				my: 'bottom center',
+				at: 'top center'
+			}
+		});
 		records.list.append(item);
 	};
 	this.removeAllItems = function() {

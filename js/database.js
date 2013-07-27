@@ -4,6 +4,7 @@ function Database() {
 	// initial create
 	db.transaction(function(tx) {
 		tx.executeSql('CREATE TABLE IF NOT EXISTS lists (id INTEGER PRIMARY KEY, year INTEGER, month INTEGER, day INTEGER)');
+
 		tx.executeSql('CREATE TABLE IF NOT EXISTS charts (id INTEGER PRIMARY KEY, first VARCHAR(50), last VARCHAR(50), birthday VARCHAR(50))');
 		tx.executeSql('CREATE TABLE IF NOT EXISTS locations (id INTEGER PRIMARY KEY, name VARCHAR(50))');
 		tx.executeSql('CREATE TABLE IF NOT EXISTS charts_checked_out (id INTEGER PRIMARY KEY, list_id, INTEGER, chart_id INTEGER, location_id INTEGER, check_out_time BIGINT, return_time BIGINT default -1, notes VARCHAR(255) default "")');
@@ -154,6 +155,14 @@ function Database() {
 		thisObj.createLocation(location, function(data) {
 			locationId = data.id;
 			checkOut(chartId, locationId);
+		});
+	};
+
+	this.updateNotes = function(id, notes, callback) {
+		db.transaction(function(tx) {
+			tx.executeSql('UPDATE charts_checked_out SET notes=? WHERE id=?', [notes, id], function(tx, results) {
+				callback();
+			});
 		});
 	};
 	
