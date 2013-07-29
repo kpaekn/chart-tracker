@@ -125,6 +125,7 @@ function Database() {
 		db.transaction(function(tx) {
 			tx.executeSql('SELECT CCO.*, C.first, C.last, C.birthday, L.name as location FROM charts_checked_out CCO, charts C, locations L WHERE CCO.return_time=? AND L.id=CCO.location_id AND C.id=CCO.chart_id', [-1], function(tx, results) {
 				var charts = getList(results.rows, ['id', 'return_time', 'check_out_time', 'notes', 'last', 'first', 'birthday', 'location']);
+				console.log(charts);
 				callback(charts);
 			});
 		});

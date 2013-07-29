@@ -1,32 +1,40 @@
- .sidebar, .qtip {
-	display: none !important;
+h3 {
+	line-height: 1;
+	margin: 0 0 0.5em;
 }
-
- .content .header {
- 	height: auto !important;
- 	position: initial;
- 	form {
- 		display: none !important;
- 	}
- }
-
-.content .records {
-	box-shadow: 0 0;
-	position: initial;
-	ul li {
+.records {
+	list-style: none;
+	margin: 0;
+	li {
+		overflow: auto;
 		page-break-inside: avoid;
-		page-break-before: auto;
-		page-break-after: auto;
-		.btn-group, .btn {
-			display: none;
+		&.header {
+			border-bottom: 1px solid #333;
+			font-weight: bold;
+			padding-bottom: 2px;
 		}
-		.notes {
-			float: left !important;
-			margin-left: 36px;
-			span {
-				overflow: visible !important;
-				text-overflow: initial !important;
-				white-space: normal !important;
+		&:nth-child(even) {
+			background-color: #f1f1f1;
+			-webkit-print-color-adjust: exact;
+		}
+		> div {
+			float: left;
+			&.name {
+				width: 20%;
+				small {
+					font-size: 8pt;
+					font-weight: bold;
+				}
+			}
+			&.location {
+				width: 15%;
+			}
+			&.time {
+				width: 15%;
+			}
+			&.notes {
+				float: none;
+				margin-left: 50%;
 			}
 		}
 	}

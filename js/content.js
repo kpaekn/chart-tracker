@@ -13,8 +13,9 @@ function Records() {
 			notes = btn.next(),
 			id = btn.attr('data-id');
 
-		editNoteModal.textarea.val(notes.html());
 		editNoteModal.modal('show');
+		editNoteModal.textarea.val(notes.html());
+		editNoteModal.textarea.focus();
 		editNoteModal.saveBtn.off('click');
 		editNoteModal.saveBtn.click(function(e) {
 			var newNotes = editNoteModal.textarea.val();
@@ -24,22 +25,6 @@ function Records() {
 			});
 		});
 	});
-
-	// private functions
-	function formatDate(time) {
-		if(time == -1)
-			return 'Not Returned';
-
-		var date = new Date(time),
-			month = date.getMonth() + 1,
-			day = date.getDate(),
-			hour = date.getHours(),
-			min = date.getMinutes(),
-			ampm = (hour < 12) ? 'a' : 'p';
-		hour = (hour % 12 == 0) ? 12 : (hour % 12);
-		min = (min < 10) ? ('0' + min) : min;
-		return month + '/' + day + '@' + hour + ':' + min + ampm;
-	}
 
 	// public functions
 	this.addItem = function(id, last, first, birthday, location, checkOutTime, returnTime, notesText) {
@@ -186,7 +171,6 @@ function Content() {
 			checkOutForm.firstName.val(firstName);
 			checkOutForm.birthday.val(birthday);
 
-			checkOutForm.location.focus();
 			return lastName;
 		}
 	});
@@ -228,7 +212,7 @@ function Content() {
 	});
 
 	outstandingForm.printBtn.click(function(e) {
-		window.print();
+		window.open('print.outstanding.html');
 	});
 
 	// private functions
