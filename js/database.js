@@ -121,6 +121,14 @@ function Database() {
 			});
 		});
 	};
+	this.getOutstandingCharts = function(callback) {
+		db.transaction(function(tx) {
+			tx.executeSql('SELECT CCO.*, C.first, C.last, C.birthday, L.name as location FROM charts_checked_out CCO, charts C, locations L WHERE CCO.return_time=? AND L.id=CCO.location_id AND C.id=CCO.chart_id', [-1], function(tx, results) {
+				var charts = getList(results.rows, ['id', 'return_time', 'check_out_time', 'notes', 'last', 'first', 'birthday', 'location']);
+				callback(charts);
+			});
+		});
+	};
 	this.checkOutChart = function(listId, last, first, birthday, location, callback) {
 		var chartId = -1, locationId = -1;
 		var checkOut = function() {
@@ -171,7 +179,14 @@ function Database() {
 				});
 			});
 		});
-	}
+	};
+	this.unReturnChart = function(id, callback) {
+		db.transaction(function(tx) {
+			tx.executeSql('UPDATE charts_checked_out SET return_time=? WHERE id=?', [-1, id], function(tx, results) {
+				callback();
+			});
+		});
+	};
 
 	this.updateNotes = function(id, notes, callback) {
 		db.transaction(function(tx) {

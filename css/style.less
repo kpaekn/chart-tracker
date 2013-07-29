@@ -2,12 +2,16 @@
 @header-height-normal: 140px;
 @header-height-outstanding: 80px;
 
+.font() {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
 .round-corner(@radius) {
 	border-radius: @radius;
 	-webkit-border-radius: @radius;
 }
 
 html, body {
+	.font();
 	height: 100%;
 }
 
@@ -71,6 +75,12 @@ html, body {
 				font-size: 8pt;
 				font-weight: bold;
 				text-transform: uppercase;
+			}
+			i {
+				display: inline-block;
+				font-size: 12pt;
+				text-align: center;
+				width: 15px;
 			}
 		}
 	}
@@ -159,6 +169,9 @@ html, body {
 					&.btn-group {
 						text-align: center;
 						width: 70px;
+						.undo {
+							display: none;
+						}
 					}
 					&.name {
 						width: 200px;
@@ -197,10 +210,13 @@ html, body {
 				}
 				&.returned {
 					opacity: 0.5;
+					.btn-group .undo {
+						display: inline-block;
+					}
 					.name, .location {
 						text-decoration: line-through;
 					}
-					.notes .btn, .btn-group .return {
+					.btn-group .return {
 						display: none;
 					}
 				}
@@ -223,6 +239,9 @@ html, body {
 .btn-group > .btn + .btn {
 	margin-left: 0;
 }
-.btn, {
+.btn {
 	border-radius: 0 !important;
+	&.btn-small i, &.btn-mini i {
+		font-size: 10pt;
+	}
 }

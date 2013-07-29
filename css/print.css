@@ -1,0 +1,4 @@
+.sidebar,.qtip{display:none !important}
+.content .header{height:auto !important;position:initial}.content .header form{display:none !important}
+.content .records{box-shadow:0 0;position:initial}.content .records ul li{page-break-inside:avoid;page-break-before:auto;page-break-after:auto}.content .records ul li .btn-group,.content .records ul li .btn{display:none}
+.content .records ul li .notes{float:left !important;margin-left:36px}.content .records ul li .notes span{overflow:visible !important;text-overflow:initial !important;white-space:normal !important}

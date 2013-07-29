@@ -3,9 +3,11 @@
 	<head>
 		<!-- Styles -->
 		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-		<link rel="stylesheet" type="text/css" href="css/bootstrap-select.css">
-		<link rel="stylesheet" type="text/css" href="css/jquery.qtip.min.css">
+		<link rel="stylesheet" type="text/css" media="screen" href="css/bootstrap-select.css">
+		<link rel="stylesheet" type="text/css" media="screen" href="css/jquery.qtip.min.css">
+		<link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
 		<link rel="stylesheet" type="text/css" href="css/style.css">
+		<link rel="stylesheet" type="text/css" media="print" href="css/print.css">
 	</head>
 	<body>
 		<div class="sidebar">
@@ -17,7 +19,7 @@
 		</div>
 		<div class="content hidden">
 			<div class="header">
-				<h2><span>Title</span> <button class="delete-list btn btn-small btn-danger" title="Delete this list."><i class="icon-remove icon-white"></i> Delete List</button></h2>
+				<h2><span>Title</span> <button class="delete-list btn btn-small btn-danger" title="Delete this list."><i class="icon-remove"></i> Delete List</button></h2>
 				<form id="check-out-form">
 					<fieldset>
 						<span>
@@ -39,15 +41,15 @@
 					</fieldset>
 					<fieldset>
 						<div class="btn-group">
-							<button class="btn btn-small" type="reset">Reset</button>
-							<button class="btn btn-small btn-primary" type="submit"><i class="icon-ok icon-white"></i> Check Out</button>
+							<button class="btn btn-small" type="reset"><i class="icon-undo"></i> Reset</button>
+							<button class="btn btn-small btn-primary" type="submit"><i class="icon-ok"></i> Check Out</button>
 						</div>
-						<button class="btn btn-small print" type="button" title="Print the history of charts checked out and returned.">Print</button>
+						<button class="btn btn-small print" type="button" title="Print the history of charts checked out and returned."><i class="icon-print"></i> Print</button>
 					</fieldset>
 				</form>
 				<form id="outstanding-form">
 					<fieldset class="btn-group">
-						<button class="btn btn-small" type="button" title="Print the list of outstanding charts.">Print</button>
+						<button class="btn btn-small print" type="button" title="Print the list of outstanding charts."><i class="icon-print"></i> Print</button>
 					</fieldset>
 				</form>
 			</div>
@@ -70,7 +72,7 @@
 			</div>
 			<div class="modal-footer">
 				<button class="btn" data-dismiss="modal">Cancel</button>
-				<button class="btn btn-primary create"><i class="icon-ok icon-white"></i> Create List</button>
+				<button class="btn btn-primary create"><i class="icon-ok"></i> Create List</button>
 			</div>
 		</div>
 		<div id="delete-list-modal" class="modal hide fade">
@@ -85,7 +87,7 @@
 			</div>
 			<div class="modal-footer">
 				<button class="btn" data-dismiss="modal">Cancel</button>
-				<button class="btn btn-danger delete"><i class="icon-remove icon-white"></i> Delete List</button>
+				<button class="btn btn-danger delete"><i class="icon-remove"></i> Delete List</button>
 			</div>
 		</div>
 		<div id="edit-note-modal" class="modal hide fade">
@@ -98,7 +100,7 @@
 			</div>
 			<div class="modal-footer">
 				<button class="btn" data-dismiss="modal">Cancel</button>
-				<button class="btn btn-primary save"><i class="icon-ok icon-white"></i> Save Changes</button>
+				<button class="btn btn-primary save"><i class="icon-ok"></i> Save Changes</button>
 			</div>
 		</div>
 

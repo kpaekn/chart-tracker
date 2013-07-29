@@ -52,8 +52,9 @@ function Records() {
 
 		var btnGroup = $('<div class="btn-group"></div>'),
 			deleteBtn = $('<button class="btn btn-mini btn-danger delete" title="Delete this record."><i class="icon-remove icon-white"></i></button>'),
-			returnBtn = $('<button class="btn btn-mini return" title="Return this chart."><i class="icon-ok"></i></button>');
-		btnGroup.append(deleteBtn, returnBtn);
+			returnBtn = $('<button class="btn btn-mini btn-primary return" title="Return this chart."><i class="icon-ok"></i></button>'),
+			undoBtn = $('<button class="btn btn-mini undo" title="Undo (un-return the chart)."><i class="icon-undo"</i></button>');
+		btnGroup.append(deleteBtn, returnBtn, undoBtn);
 
 		var name = $('<div class="name">' + last + ', ' + first + ' <small>' + birthday + '</small>' + '</div>'),
 			location = $('<div class="location">' + location + '</div>');
@@ -85,13 +86,19 @@ function Records() {
 		});
 		deleteBtn.click(function(e) {
 			database.deleteRecord(id, function() {
-				item.remove();
+				item.slideToggle(250, item.remove);
 			});
 		});
 		returnBtn.click(function(e) {
 			database.returnChart(id, function(data) {
 				item.addClass('returned');
 				ret.html(formatDate(data.returnTime));
+			});
+		});
+		undoBtn.click(function(e) {
+			database.unReturnChart(id, function(data) {
+				item.removeClass('returned');
+				ret.html(formatDate(-1));
 			});
 		});
 
@@ -134,6 +141,9 @@ function Content() {
 		checkOutForm.firstName = checkOutForm.find('.first-name');
 		checkOutForm.birthday = checkOutForm.find('.birthday');
 		checkOutForm.location = checkOutForm.find('.location');
+
+	var outstandingForm = content.find('#outstanding-form');
+		outstandingForm.printBtn = outstandingForm.find('.print');
 
 	// deleting lists
 	header.deleteBtn.click(function(e) {
@@ -217,6 +227,10 @@ function Content() {
 		}
 	});
 
+	outstandingForm.printBtn.click(function(e) {
+		window.print();
+	});
+
 	// private functions
 	var setHeader = function(text) {
 		header.find('span').html(text);
@@ -230,7 +244,7 @@ function Content() {
 			month: month,
 			day: day
 		};
-		content.fadeOut(400, function() {
+		content.fadeOut(250, function() {
 			content.removeClass('outstanding').addClass('normal');
 			setHeader(MONTHS[month] + ' ' + day + ', ' + year);
 			checkOutForm[0].reset();
@@ -247,11 +261,18 @@ function Content() {
 	};
 	this.loadOutstanding = function() {
 		selectedList = null;
-		content.fadeOut(400, function() {
+		content.fadeOut(250, function() {
 			content.removeClass('normal').addClass('outstanding');
 			setHeader('Outstanding Charts');
-			records.removeAllItems();
-			content.fadeIn();
+			database.getOutstandingCharts(function(charts) {
+				var i, c;
+				records.removeAllItems();
+				for(i = 0; i < charts.length; i++) {
+					c = charts[i];
+					records.addItem(c.id, c.last, c.first, c.birthday, c.location, c.check_out_time, c.return_time, c.notes);
+				}
+				content.fadeIn();
+			});
 		});
 	};
 
