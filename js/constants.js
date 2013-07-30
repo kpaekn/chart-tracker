@@ -15,3 +15,7 @@ function formatDate(time) {
 	min = (min < 10) ? ('0' + min) : min;
 	return month + '/' + day + '@' + hour + ':' + min + ampm;
 }
+
+function getURLParameter(name) {
+    return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
+}

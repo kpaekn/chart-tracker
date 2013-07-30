@@ -126,6 +126,7 @@ function Content() {
 		checkOutForm.firstName = checkOutForm.find('.first-name');
 		checkOutForm.birthday = checkOutForm.find('.birthday');
 		checkOutForm.location = checkOutForm.find('.location');
+		checkOutForm.printBtn = checkOutForm.find('.print');
 
 	var outstandingForm = content.find('#outstanding-form');
 		outstandingForm.printBtn = outstandingForm.find('.print');
@@ -211,8 +212,12 @@ function Content() {
 		}
 	});
 
+	checkOutForm.printBtn.click(function(e) {
+		window.open('print.history.html?list=' + encodeURIComponent(JSON.stringify(selectedList)), '_blank')
+	});
+
 	outstandingForm.printBtn.click(function(e) {
-		window.open('print.outstanding.html');
+		window.open('print.outstanding.html', '_blank', 'width=1px, height=1px');
 	});
 
 	// private functions

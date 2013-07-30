@@ -1,0 +1,33 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="css/print.css">
+	</head>
+	<body>
+		<h3>Date</h3>
+		<ul class="records">
+			<li class="header">
+				<div class="name">Name</div>
+				<div class="location">Location</div>
+				<div class="time">Time</div>
+				<div class="notes">Notes</div>
+			</li>
+		</ul>
+	</body>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/database.js"></script>
+	<script type="text/javascript" src="js/constants.js"></script>
+	<script type="text/javascript">
+		var database = new Database(),
+			records = $('.records');
+		
+		var list = JSON.parse(getURLParameter('list'));
+		$('h3').html(MONTHS[list.month] + ' ' + list.day + ' ' + list.year);
+		database.getChartsCheckedOut(list.id, function(charts) {
+			console.log(charts);
+		});
+
+		//window.print();
+		//window.close();	
+	</script>
+</html>
