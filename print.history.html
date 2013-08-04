@@ -24,7 +24,7 @@
 		var list = JSON.parse(getURLParameter('list'));
 		$('h3').html(MONTHS[list.month] + ' ' + list.day + ' ' + list.year);
 		database.getChartsCheckedOut(list.id, function(charts) {
-			console.log(charts);
+			
 		});
 
 		//window.print();

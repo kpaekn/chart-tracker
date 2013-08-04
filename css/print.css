@@ -1,6 +1,5 @@
 h3{line-height:1;margin:0 0 .5em}
 .records{list-style:none;margin:0}.records li{overflow:auto;page-break-inside:avoid}.records li.header{border-bottom:1px solid #333;font-weight:bold;padding-bottom:2px}
-.records li:nth-child(even){background-color:#f1f1f1;-webkit-print-color-adjust:exact}
 .records li>div{float:left}.records li>div.name{width:20%}.records li>div.name small{font-size:8pt;font-weight:bold}
 .records li>div.location{width:15%}
 .records li>div.time{width:15%}
