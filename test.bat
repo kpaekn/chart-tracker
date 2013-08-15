@@ -1,3 +1,3 @@
-7z a app.zip css font img js *.html package.json
+7z a app.zip * -x!.git*
 move /y app.zip app.nw
 nw app.nw

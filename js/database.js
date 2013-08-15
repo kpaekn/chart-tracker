@@ -1,201 +1,97 @@
-function Database() {
-	var thisObj = this;
-	var db = openDatabase('mydb', '1.0', 'chart system', 2 * 1024 * 1024);
-	// initial create
+var Database = (function() {
+
+	var db = openDatabase('charttracker', '2.0', 'Chart Tracker', 2 * 1024 * 1024);
 	db.transaction(function(tx) {
-		tx.executeSql('CREATE TABLE IF NOT EXISTS lists (id INTEGER PRIMARY KEY, year INTEGER, month INTEGER, day INTEGER)');
+		tx.executeSql('create table if not exists lists(id integer primary key, date integer)');
+		tx.executeSql('create table if not exists patients(id integer primary key, first varchar(50), last varchar(50), birthday varchar(50))');
+		tx.executeSql('create table if not exists locations(id integer primary key, name varchar(50))');
+	});
 
-		tx.executeSql('CREATE TABLE IF NOT EXISTS charts (id INTEGER PRIMARY KEY, first VARCHAR(50), last VARCHAR(50), birthday VARCHAR(50))');
-		tx.executeSql('CREATE TABLE IF NOT EXISTS locations (id INTEGER PRIMARY KEY, name VARCHAR(50))');
-		tx.executeSql('CREATE TABLE IF NOT EXISTS charts_checked_out (id INTEGER PRIMARY KEY, list_id, INTEGER, chart_id INTEGER, location_id INTEGER, check_out_time BIGINT, return_time BIGINT default -1, notes VARCHAR(255) default "")');
-	})
-
-	// private functions
-	function getList(rows, props) {
-		var numRows = rows.length, numProps = props.length, list = [], i, obj, row, prop;
-		for(i = 0; i < numRows; i++) {
-			obj = {};
-			row = rows.item(i);
-			for(j = 0; j < numProps; j++) {
-				prop = props[j];
-				obj[prop] = row[prop];
-			}
-			list.push(obj);
+	// converts a Transaction result to an Array
+	var toArray = function(results) {
+		var len = results.rows.length, i, items = [];
+		for(i = 0; i < len; i++) {
+			items.push(results.rows.item(i));
 		}
-		return list;
-	};
+		return items;
+	}
 
-	// public functions
+	// gets all lists sorted by date (desc)
 	this.getLists = function(callback) {
 		db.transaction(function(tx) {
-			tx.executeSql('SELECT * FROM lists', [], function(tx, results) {
-				var lists = getList(results.rows, ['id', 'year', 'month', 'day']);
-				callback(lists);
+			tx.executeSql('select * from lists order by date desc', [], function(tx, results) {
+				callback(toArray(results));
 			});
 		});
 	};
-	this.createList = function(year, month, day, callback) {
+
+	// adds a list if it has not been created yet
+	this.addList = function(date, callback) {
 		db.transaction(function(tx) {
-			tx.executeSql('SELECT * FROM lists WHERE year=? and month=? and day=?', [year, month, day], function(tx, results) {
-				if(results.rows.length > 0) {
+			tx.executeSql('select * from lists where date=?', [date], function(tx, results) {
+				var len = results.rows.length;
+				if(len > 0) {
 					callback({
 						success: false,
-						message: 'A list for ' + month + '/' + day + '/' + year + ' already exists.'
+						message: 'Already exists'
 					});
 				} else {
-					tx.executeSql('INSERT INTO lists(year, month, day) VALUES(?, ?, ?)', [year, month, day], function(tx, results) {
+					tx.executeSql('insert into lists(date) values(?)', [date], function(tx, results) {
+						console.log(results);
 						callback({
 							success: true,
 							insertId: results.insertId
 						});
-					});
+					})
 				}
 			});
-		});
+		})
 	};
-	this.deleteList = function(id, callback) {
+
+	// gets all patients
+	this.getPatients = function(callback, orderby) {
+		if(!orderby) orderby = 'last, first, birthday asc';
 		db.transaction(function(tx) {
-			tx.executeSql('DELETE FROM lists WHERE id=?', [id], function(tx, results) {
-				callback();
+			tx.executeSql('select * from patients order by ' + orderby, [], function(tx, results) {
+				callback(toArray(results));
+			}, function(tx, err) {
+				console.log(err);
 			});
 		});
 	};
 
-	this.getCharts = function(callback) {
+	// get patient id by first, last name and birthday
+	// adds new patient if patient dne
+	this.getPatientId = function(first, last, birthday, callback) {
 		db.transaction(function(tx) {
-			tx.executeSql('SELECT * FROM charts', [], function(tx, results) {
-				var charts = getList(results.rows, ['id', 'last', 'first', 'birthday']);
-				callback(charts);
-			});
-		});
-	};
-	this.createChart = function(last, first, birthday, callback) {
-		db.transaction(function(tx) {
-			tx.executeSql('SELECT * FROM charts WHERE last=? AND first=? AND birthday=?', [last, first, birthday], function(tx, results) {
-				if(results.rows.length > 0) {
-					callback({
-						id: results.rows.item(0).id
-					});
+			tx.executeSql('select * from patients where first=? and last=? and birthday=?', [first, last, birthday], function(tx, results) {
+				var len = results.rows.length;
+				if(len > 0) {
+					callback(results.rows.item(0).id);
 				} else {
-					tx.executeSql('INSERT INTO charts(last, first, birthday) VALUES(?, ?, ?)', [last, first, birthday], function(tx, results) {
-						callback({
-							id: results.insertId
-						});
+					tx.executeSql('insert into patients(first, last, birthday) values(?,?,?)', [first, last, birthday], function(tx, results) {
+						callback(results.insertId);
 					});
 				}
 			});
 		});
 	};
 
+	// gets all location; alpha-order
 	this.getLocations = function(callback) {
 		db.transaction(function(tx) {
-			tx.executeSql('SELECT * FROM locations', [], function(tx, results) {
-				var locations = getList(results.rows, ['id', 'name']);
-				callback(locations);
+			tx.executeSql('select * from locations order by name asc', [], function(tx, results) {
+				callback(toArray(results));
 			});
 		});
-	};
-	this.createLocation = function(name, callback) {
-		db.transaction(function(tx) {
-			tx.executeSql('SELECT * FROM locations WHERE name=?', [name], function(tx, results) {
-				if(results.rows.length > 0) {
-					callback({
-						id: results.rows.item(0).id
-					});
-				} else {
-					tx.executeSql('INSERT INTO locations(name) VALUES(?)', [name], function(tx, results) {
-						callback({
-							id: results.insertId
-						});
-					});
-				}
-			});
+	}
+
+	this.checkoutChart = function(listId, first, last, birthday, location) {
+		var patientId;
+		this.getPatientId(first, last, birthday, function(id) {
+			patientId = id;
 		});
 	};
 
-	this.getChartsCheckedOut = function(id, callback) {
-		db.transaction(function(tx) {
-			tx.executeSql('SELECT CCO.*, C.first, C.last, C.birthday, L.name as location FROM charts_checked_out CCO, charts C, locations L WHERE list_id=? AND L.id=CCO.location_id AND C.id=CCO.chart_id', [id], function(tx, results) {
-				var charts = getList(results.rows, ['id', 'return_time', 'check_out_time', 'notes', 'last', 'first', 'birthday', 'location']);
-				callback(charts);
-			});
-		});
-	};
-	this.getOutstandingCharts = function(callback) {
-		db.transaction(function(tx) {
-			tx.executeSql('SELECT CCO.*, C.first, C.last, C.birthday, L.name as location FROM charts_checked_out CCO, charts C, locations L WHERE CCO.return_time=? AND L.id=CCO.location_id AND C.id=CCO.chart_id', [-1], function(tx, results) {
-				var charts = getList(results.rows, ['id', 'return_time', 'check_out_time', 'notes', 'last', 'first', 'birthday', 'location']);
-				console.log(charts);
-				callback(charts);
-			});
-		});
-	};
-	this.checkOutChart = function(listId, last, first, birthday, location, callback) {
-		var chartId = -1, locationId = -1;
-		var checkOut = function() {
-			if(chartId !== -1 && locationId !== -1) {
-				db.transaction(function(tx) {
-					tx.executeSql('SELECT * FROM charts_checked_out WHERE chart_id=? AND return_time=-1', [chartId], function(tx, results) {
-						if(results.rows.length > 0) {
-							callback({
-								success: false,
-								message: 'That chart is already checked out.'
-							});
-						} else {
-							var currTime = (new Date).getTime();
-							tx.executeSql('INSERT INTO charts_checked_out(list_id, chart_id, location_id, check_out_time) VALUES(?, ?, ?, ?)', [listId, chartId, locationId, currTime], function(tx, results) {
-								callback({
-									success: true,
-									id: results.insertId,
-									check_out_time: currTime
-								});
-							});
-						}
-					});
-				});
-			}
-		};
-		thisObj.createChart(last, first, birthday, function(data) {
-			chartId = data.id;
-			checkOut(chartId, locationId);
-		});
-		thisObj.createLocation(location, function(data) {
-			locationId = data.id;
-			checkOut(chartId, locationId);
-		});
-	};
-	this.deleteRecord = function(id, callback) {
-		db.transaction(function(tx) {
-			tx.executeSql('DELETE FROM charts_checked_out WHERE id=?', [id], function(tx) {
-				callback();
-			});
-		});
-	};
-	this.returnChart = function(id, callback) {
-		db.transaction(function(tx) {
-			var currTime = (new Date).getTime();
-			tx.executeSql('UPDATE charts_checked_out SET return_time=? WHERE id=?', [currTime, id], function(tx, results) {
-				callback({
-					returnTime: currTime
-				});
-			});
-		});
-	};
-	this.unReturnChart = function(id, callback) {
-		db.transaction(function(tx) {
-			tx.executeSql('UPDATE charts_checked_out SET return_time=? WHERE id=?', [-1, id], function(tx, results) {
-				callback();
-			});
-		});
-	};
-
-	this.updateNotes = function(id, notes, callback) {
-		db.transaction(function(tx) {
-			tx.executeSql('UPDATE charts_checked_out SET notes=? WHERE id=?', [notes, id], function(tx, results) {
-				callback();
-			});
-		});
-	};
-	
 	return this;
-}
+}());

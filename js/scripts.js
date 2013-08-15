@@ -1,20 +1,42 @@
-var database = new Database();
-var sidebar = new Sidebar();
-var content = new Content();
+(function($) {
+	$.fn.header = function(arg) {
+		var links = this.find('a');
+		if(arg == 'clear') {
+			links.removeClass('active');
+		} else {
+			var callback = arg;
+			links.click(function(e) {
+				e.preventDefault();
+				if(!$(e.currentTarget).hasClass('active')) {
+					links.removeClass('active');
+					$(e.currentTarget).addClass('active');
+					callback(e);
+				}
+			});	
+		}
+	};
+}(jQuery));
 
-$('[title]').qtip({
-	position: {
-		my: 'left center',
-		at: 'right center'
+var header = $('header');
+var content = new Content('.content');
+
+header.header(function(e) {
+	var id = $(e.currentTarget).attr('id');
+	switch(id) {
+		case 'lists':
+			content.loadLists();
+			break;
+		case 'outstanding':
+			content.loadOutstanding();
+			break;
+		case 'patients':
+			content.loadPatients();
+			break;
+		case 'locations':
+			content.loadLocations();
+			break;
 	}
 });
-$('.selectpicker').selectpicker({
-	showIcon: true
-});
-
-sidebar.onOutstandingSelect = function() {
-	content.loadOutstanding();
-};
-sidebar.onItemSelect = function(id, year, month, day) {
-	content.loadList(id, year, month, day);
-};
+content.on('listselected', function() {
+	header.header('clear');
+})

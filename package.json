@@ -1,5 +1,5 @@
 {
-	"name": "nw-demo",
+	"name": "chart-tracker",
 	"main": "index.html",
 	"version": "0.1.0",
 	"window": {
@@ -8,6 +8,6 @@
 		"height": 700,
 		"min_width": 960,
 		"min_height": 500,
-		"toolbar": true
+		"toolbar": false
 	}
 }
