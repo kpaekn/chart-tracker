@@ -18,7 +18,7 @@ var Content = function(selector) {
 						// add to list
 					} else {
 						$('body').popupAlert({
-							'body': 'Failed to create list: ' + resp.message
+							body: 'Failed to create list: ' + resp.message
 						});
 					}
 				});
@@ -60,9 +60,12 @@ var Content = function(selector) {
 					var location = content.form.location.val().toUpperCase();
 					Database.checkoutChart(id, first, last, birthday, location, function(resp) {
 						if(resp.success) {
-
+							content.form.find('input[type="text"]').val('');
+							content.form.first.focus();
 						} else {
-
+							$('body').popupAlert({
+								body: 'Failed to check out chart.'
+							});
 						}
 					});
 				}
@@ -87,7 +90,6 @@ var Content = function(selector) {
 		setForm();
 
 		Database.getPatients(function(patients) {
-			console.log(patients);
 			setList(patients, function(patient) {
 				var li = $('<li></li>');
 				li.append('<div>' + patient.last + ', ' + patient.first + ' <small>' + patient.birthday + '</small></div>');
@@ -99,7 +101,13 @@ var Content = function(selector) {
 	content.loadLocations = function() {
 		setHeader('Locations', 'icon-compass');
 		setForm();
-		setList();
+		Database.getLocations(function(locations) {
+			setList(locations, function(location) {
+				var li = $('<li></li>');
+				li.append('<div>' + location.name + '</div>');
+				return li;
+			});
+		});
 	};
 
 	// private
@@ -159,9 +167,8 @@ var Content = function(selector) {
 			var label = container.find('label').html();
 			if(fields[i].val() == '') {
 				container.addClass('has-error');
-				fields[i].focus();
 				$('body').popupAlert({
-					'body': label + ' is required.'
+					body: label + ' is required.'
 				});
 				return false;
 			} else {
