@@ -78,7 +78,7 @@ var Content = function(selector) {
 				var name = $('<span class="name">' + chart.last + ', ' + chart.first + ' <small>' + chart.birthday + '</small></span>');
 				var location = $('<span class="location">' + chart.location + '</span>');
 				var checkOutTime = $('<span class="time text-right">' + dateFormat(chart.checkOutTime, 'H:MMt') + '</span>');
-				var timeArrow = $('<span class="time-arrow"><i class="icon-arrow-right"></i></span>');
+				var timeArrow = $('<span class="time-arrow">&raquo;</span>');
 				var returnTime = (chart.returnTime == -1) ? 'N/A' : dateFormat(chart.returnTime, 'H:MMt');
 					returnTime = $('<span class="time">' + returnTime + '</span>');
 				li.append(name, location, checkOutTime, timeArrow, returnTime);
@@ -92,10 +92,22 @@ var Content = function(selector) {
 		setForm('forms/outstanding.html', function() {
 			content.form.submit(function(e) {
 				e.preventDefault();
-				console.log('print');
+				window.print();
 			});
 		});
-		setList();
+		Database.getOutstandingCharts(function(charts) {
+			setList(charts, function(chart) {
+				var li = $('<li></li>');
+				var name = $('<span class="name">' + chart.last + ', ' + chart.first + ' <small>' + chart.birthday + '</small></span>');
+				var location = $('<span class="location">' + chart.location + '</span>');
+				var checkOutTime = $('<span class="time text-right">' + dateFormat(chart.checkOutTime, 'H:MMt') + '</span>');
+				var timeArrow = $('<span class="time-arrow">&raquo;</span>');
+				var returnTime = (chart.returnTime == -1) ? 'N/A' : dateFormat(chart.returnTime, 'H:MMt');
+					returnTime = $('<span class="time">' + returnTime + '</span>');
+				li.append(name, location, checkOutTime, timeArrow, returnTime);
+				return li;
+			});
+		});
 	};
 
 	content.loadPatients = function() {

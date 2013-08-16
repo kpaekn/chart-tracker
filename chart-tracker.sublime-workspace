@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"tex",
+				"text-decoration"
+			],
+			[
 				"err",
 				"errHandler"
 			],
@@ -510,10 +514,6 @@
 			[
 				"json",
 				"json_encode"
-			],
-			[
-				"time",
-				"timesheetId"
 			]
 		]
 	},
@@ -523,8 +523,17 @@
 			"file": "css/style.less",
 			"settings":
 			{
-				"buffer_size": 1955,
+				"buffer_size": 1646,
 				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "css/print.css",
+			"settings":
+			{
+				"buffer_size": 158,
+				"line_ending": "Windows",
+				"name": "print.css"
 			}
 		},
 		{
@@ -539,7 +548,7 @@
 			"file": "js/content.js",
 			"settings":
 			{
-				"buffer_size": 7217,
+				"buffer_size": 7933,
 				"line_ending": "Windows"
 			}
 		},
@@ -547,7 +556,7 @@
 			"file": "js/database.js",
 			"settings":
 			{
-				"buffer_size": 6611,
+				"buffer_size": 7034,
 				"line_ending": "Windows"
 			}
 		}
@@ -941,7 +950,7 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -949,15 +958,15 @@
 					"file": "css/style.less",
 					"settings":
 					{
-						"buffer_size": 1955,
+						"buffer_size": 1646,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1571,
-								1571
+								122,
+								122
 							]
 						],
 						"settings":
@@ -966,13 +975,40 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 798.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
+					"file": "css/print.css",
+					"settings":
+					{
+						"buffer_size": 158,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								83,
+								83
+							]
+						],
+						"settings":
+						{
+							"auto_name": "print.css",
+							"syntax": "Packages/CSS/CSS.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
 					"file": "index.html",
 					"settings":
 					{
@@ -999,19 +1035,19 @@
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 3,
 					"file": "js/content.js",
 					"settings":
 					{
-						"buffer_size": 7217,
+						"buffer_size": 7933,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6248,
-								6248
+								3973,
+								3973
 							]
 						],
 						"settings":
@@ -1020,25 +1056,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2226.0,
+						"translation.y": 882.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 4,
 					"file": "js/database.js",
 					"settings":
 					{
-						"buffer_size": 6611,
+						"buffer_size": 7034,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1471,
-								1471
+								5659,
+								5659
 							]
 						],
 						"settings":
@@ -1048,7 +1084,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1722.0,
+						"translation.y": 1848.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"

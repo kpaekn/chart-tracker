@@ -165,6 +165,15 @@ var Database = (function() {
 		});
 	};
 
+	// gets all checked out chart that have not been returned
+	this.getOutstandingCharts = function(callback) {
+		db.transaction(function(tx) {
+			tx.executeSql('select C.*, P.first, P.last, P.birthday, L.name as location from checkedOutCharts C, patients P, locations L where C.patientId=P.id and C.locationId=L.id and returnTime=-1', [], function(tx, results) {
+				callback(toArray(results));
+			}, errHandler);
+		});
+	};
+
 	// checks out a chart
 	this.checkOutChart = function(listId, first, last, birthday, location, callback) {
 		this.getPatientId(first, last, birthday, function(patientId) {
