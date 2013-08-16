@@ -83,7 +83,22 @@ header {
 		margin-top: 10px;
 		padding: 0;
 		li {
-
+			> * {
+				display: inline-block;
+				&.name {
+					width: 180px;
+				}
+				&.location {
+					width: 140px;
+				}
+				&.time {
+					width: 70px;
+				}
+				&.time-arrow {
+					width: 20px;
+					text-align: center;
+				}
+			}
 		}
 	}
 }

@@ -17,9 +17,7 @@ var Content = function(selector) {
 					if(resp.success) {
 						// add to list
 					} else {
-						$('body').popupAlert({
-							body: 'Failed to create list: ' + resp.message
-						});
+						$.alert.show('Failed to create list: ' + resp.message);
 					}
 				});
 			});
@@ -29,9 +27,8 @@ var Content = function(selector) {
 			setList(lists, function(list) {
 				var li = $('<li></li>');
 				var date = new Date(list.date);
-				var label = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
 				li.attr('data-id', list.id);
-				li.html('<a href="#"><span>' + label + '</span> <small>' + Date.DOW[date.getDay()] + '</small><a>');
+				li.html('<a href="#"><span>' + date.format('m/d/yyyy') + '</span> <small>' + date.format('dddd') + '</small><a>');
 				li.a = li.find('a');
 				li.a.click(function(e) {
 					e.preventDefault();
@@ -44,8 +41,7 @@ var Content = function(selector) {
 
 	content.loadList = function(id, date) {
 		content.trigger('listselected');
-		var label = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
-		setHeader(label + ' - ' + Date.DOW[date.getDay()], 'icon-calendar');
+		setHeader(date.format('m/d/yyyy') + ' - ' + date.format('dddd'), 'icon-calendar');
 		setForm('forms/list.html', function() {
 			content.form.first = content.form.find('.first');
 			content.form.last = content.form.find('.last');
@@ -58,20 +54,34 @@ var Content = function(selector) {
 					var last = content.form.last.val().toUpperCase();
 					var birthday = content.form.birthday.val().toUpperCase();
 					var location = content.form.location.val().toUpperCase();
-					Database.checkoutChart(id, first, last, birthday, location, function(resp) {
+					Database.checkOutChart(id, first, last, birthday, location, function(resp) {
 						if(resp.success) {
 							content.form.find('input[type="text"]').val('');
-							content.form.first.focus();
+							content.form.last.focus();
 						} else {
 							$('body').popupAlert({
-								body: 'Failed to check out chart.'
+								body: 'Failed to check out chart: ' + resp.message
 							});
 						}
 					});
 				}
 			});
 		});
-		setList();
+		Database.getCheckedOutCharts(id, function(charts) {
+			console.log(charts);
+			var date = new Date();
+			setList(charts, function(chart) {
+				var li = $('<li></li>');
+				var name = $('<span class="name">' + chart.last + ', ' + chart.first + ' <small>' + chart.birthday + '</small></span>');
+				var location = $('<span class="location">' + chart.location + '</span>');
+				var checkOutTime = $('<span class="time text-right">' + dateFormat(chart.checkOutTime, 'H:MMt') + '</span>');
+				var timeArrow = $('<span class="time-arrow"><i class="icon-arrow-right"></i></span>');
+				var returnTime = (chart.returnTime == -1) ? 'N/A' : dateFormat(chart.returnTime, 'H:MMt');
+					returnTime = $('<span class="time">' + returnTime + '</span>');
+				li.append(name, location, checkOutTime, timeArrow, returnTime);
+				return li;
+			});
+		});
 	};
 
 	content.loadOutstanding = function() {
@@ -92,7 +102,12 @@ var Content = function(selector) {
 		Database.getPatients(function(patients) {
 			setList(patients, function(patient) {
 				var li = $('<li></li>');
-				li.append('<div>' + patient.last + ', ' + patient.first + ' <small>' + patient.birthday + '</small></div>');
+				var name = $('<a href="#">' + patient.last + ', ' + patient.first + ' <small>' + patient.birthday + '</small></a>');
+				li.append(name);
+				name.click(function(e) {
+					e.preventDefault();
+
+				});
 				return li;
 			});
 		});
@@ -163,16 +178,20 @@ var Content = function(selector) {
 	function checkRequiredInputs(fields) {
 		var i;
 		for(i = 0; i < fields.length; i++) {
-			var container = fields[i].parent();
+			var field = fields[i];
+			var container = field.parent();
 			var label = container.find('label').html();
-			if(fields[i].val() == '') {
+			if(field.val() == '') {
 				container.addClass('has-error');
-				$('body').popupAlert({
-					body: label + ' is required.'
-				});
+				field.popover({
+					content: label + ' is required.',
+					placement: 'bottom',
+					trigger: 'focus'
+				}).focus();
 				return false;
 			} else {
 				container.removeClass('has-error');
+				field.popover('destroy');
 			}
 		}
 		return true;

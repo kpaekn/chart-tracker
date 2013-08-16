@@ -5,6 +5,7 @@ var Database = (function() {
 		tx.executeSql('create table if not exists lists(id integer primary key, date integer)');
 		tx.executeSql('create table if not exists patients(id integer primary key, first varchar(50), last varchar(50), birthday varchar(50))');
 		tx.executeSql('create table if not exists locations(id integer primary key, name varchar(50))');
+		tx.executeSql('create table if not exists checkedOutCharts(id integer primary key, listId integer, patientId integer, locationId integer, checkOutTime integer, returnTime integer)');
 	});
 
 	// converts a Transaction result to an Array
@@ -59,8 +60,12 @@ var Database = (function() {
 			tx.executeSql('select * from patients order by ' + orderby, [], function(tx, results) {
 				callback(toArray(results));
 			}, function(tx, err) {
-				console.log(err);
-			}, errHandler);
+				// if orderby is invalid, use default orderby
+				orderby = 'last, first, birthday asc';
+				tx.executeSql('select * from patients order by ' + orderby, [], function(tx, results) {
+					callback(toArray(results));
+				});
+			});
 		});
 	};
 
@@ -107,13 +112,38 @@ var Database = (function() {
 		});
 	};
 
+	// gets all checked out charts for the given list
+	this.getCheckedOutCharts = function(listId, callback) {
+		db.transaction(function(tx) {
+			tx.executeSql('select C.*, P.first, P.last, P.birthday, L.name as location from checkedOutCharts C, patients P, locations L where listId=? and C.patientId=P.id and C.locationId=L.id', [listId], function(tx, results) {
+				callback(toArray(results));
+			}, errHandler);
+		});
+	};
 
-	this.checkoutChart = function(listId, first, last, birthday, location, callback) {
+	// checks out a chart
+	this.checkOutChart = function(listId, first, last, birthday, location, callback) {
 		this.getPatientId(first, last, birthday, function(patientId) {
 			this.getLocationId(location, function(locationId) {
-
-				callback({
-					success: true
+				db.transaction(function(tx) {
+					tx.executeSql('select * from checkedOutCharts where patientId=? and returnTime=-1', [patientId], function(tx, results) {
+						var len = results.rows.length;
+						if(len > 0) {
+							callback({
+								success: false,
+								message: 'Chart already checked out'
+							});
+						} else {
+							var currTime = (new Date()).getTime();
+							tx.executeSql('insert into checkedOutCharts(listId, patientId, locationId, checkOutTime, returnTime) values(?,?,?,?,?)',
+																	   [listId, patientId, locationId, currTime, -1], function(tx, results) {
+								callback({
+									success: true,
+									insertId: results.insertId
+								});
+							}, errHandler);
+						}
+					}, errHandler);
 				});
 			});
 		});

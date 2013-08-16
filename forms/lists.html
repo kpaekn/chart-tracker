@@ -6,7 +6,7 @@
 	var date = new Date(), i, label, dow;
 	date.setHours(0, 0, 0, 0);
 	for(i = 0; i < 10; i++) {
-		label = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+		label = date.format('m/d/yyyy');
 		dow = Date.DOW[date.getDay()];
 		$('.date').append('<option value="' + date.getTime() + '" data-subtext="' + dow + '">' + label + '</option>');
 		date.setDate(date.getDate() + 1);
