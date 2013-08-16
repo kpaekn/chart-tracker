@@ -86,9 +86,11 @@ header {
 			> * {
 				display: inline-block;
 				&.name {
+					text-transform: uppercase;
 					width: 180px;
 				}
 				&.location {
+					text-transform: uppercase;
 					width: 140px;
 				}
 				&.time {
@@ -98,7 +100,18 @@ header {
 					width: 20px;
 					text-align: center;
 				}
+				&.inline-btn {
+					margin-right: 5px;
+					padding: 0 5px;
+					text-align: center;
+					&:hover {
+						background-color: #f1f1f1;
+					}
+				}
 			}
 		}
 	}
+}
+.modal input[type="text"] {
+	text-transform: uppercase;
 }

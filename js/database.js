@@ -1,12 +1,8 @@
 var Database = (function() {
 
-	var db = openDatabase('charttracker', '2.0', 'Chart Tracker', 2 * 1024 * 1024);
-	db.transaction(function(tx) {
-		tx.executeSql('create table if not exists lists(id integer primary key, date integer)');
-		tx.executeSql('create table if not exists patients(id integer primary key, first varchar(50), last varchar(50), birthday varchar(50))');
-		tx.executeSql('create table if not exists locations(id integer primary key, name varchar(50))');
-		tx.executeSql('create table if not exists checkedOutCharts(id integer primary key, listId integer, patientId integer, locationId integer, checkOutTime integer, returnTime integer)');
-	});
+	var errHandler = function(tx, err) {
+		console.log(err);
+	};
 
 	// converts a Transaction result to an Array
 	var toArray = function(results) {
@@ -17,9 +13,15 @@ var Database = (function() {
 		return items;
 	}
 
-	var errHandler = function(tx, err) {
-		console.log(err);
-	};
+	var db = openDatabase('ct1', '1.0', 'Chart Tracker', 2 * 1024 * 1024);
+	db.transaction(function(tx) {
+
+
+		tx.executeSql('create table if not exists lists(id integer primary key, date integer)', [], null, errHandler);
+		tx.executeSql('create table if not exists patients(id integer primary key, first varchar(50), last varchar(50), birthday varchar(50), deleted integer default 0)', [], null, errHandler);
+		tx.executeSql('create table if not exists locations(id integer primary key, name varchar(50), deleted integer default 0)', [], null, errHandler);
+		tx.executeSql('create table if not exists checkedOutCharts(id integer primary key, listId integer, patientId integer, locationId integer, checkOutTime integer, returnTime integer default -1)', [], null, errHandler);
+	});
 
 	// gets all lists sorted by date (desc)
 	this.getLists = function(callback) {
@@ -42,7 +44,6 @@ var Database = (function() {
 					});
 				} else {
 					tx.executeSql('insert into lists(date) values(?)', [date], function(tx, results) {
-						console.log(results);
 						callback({
 							success: true,
 							insertId: results.insertId
@@ -55,28 +56,27 @@ var Database = (function() {
 
 	// gets all patients
 	this.getPatients = function(callback, orderby) {
-		if(!orderby) orderby = 'last, first, birthday asc';
 		db.transaction(function(tx) {
-			tx.executeSql('select * from patients order by ' + orderby, [], function(tx, results) {
+			tx.executeSql('select * from patients where deleted=0 order by last, first, birthday asc', [], function(tx, results) {
 				callback(toArray(results));
-			}, function(tx, err) {
-				// if orderby is invalid, use default orderby
-				orderby = 'last, first, birthday asc';
-				tx.executeSql('select * from patients order by ' + orderby, [], function(tx, results) {
-					callback(toArray(results));
-				});
-			});
+			}, errHandler);
 		});
 	};
 
 	// get patient id by first, last name and birthday
 	// adds new patient if patient DNE
 	this.getPatientId = function(first, last, birthday, callback) {
+		first = first.toUpperCase();
+		last = last.toUpperCase();
 		db.transaction(function(tx) {
 			tx.executeSql('select * from patients where first=? and last=? and birthday=?', [first, last, birthday], function(tx, results) {
 				var len = results.rows.length;
 				if(len > 0) {
-					callback(results.rows.item(0).id);
+					var id = results.rows.item(0).id;
+					if(results.rows.item(0).deleted == 1) {
+						tx.executeSql('update patients set deleted=0 where id=?', [id], null, errHandler);
+					}
+					callback(id);
 				} else {
 					tx.executeSql('insert into patients(first, last, birthday) values(?,?,?)', [first, last, birthday], function(tx, results) {
 						callback(results.insertId);
@@ -86,10 +86,30 @@ var Database = (function() {
 		});
 	};
 
+	// updates the patients name and birthday
+	this.updatePatient = function(id, first, last, birthday, callback) {
+		first = first.toUpperCase();
+		last = last.toUpperCase();
+		db.transaction(function(tx) {
+			tx.executeSql('update patients set first=?, last=?, birthday=? where id=?', [first, last, birthday, id], function(tx, results) {
+				callback({
+					success: true
+				});
+			}, errHandler);
+		});
+	};
+
+	// marks the patient as deleted
+	this.deletePatient = function(id) {
+		db.transaction(function(tx) {
+			tx.executeSql('update patients set deleted=1 where id=?', [id], null, errHandler);
+		});
+	};
+
 	// gets all location; alpha-order
 	this.getLocations = function(callback) {
 		db.transaction(function(tx) {
-			tx.executeSql('select * from locations order by name asc', [], function(tx, results) {
+			tx.executeSql('select * from locations where deleted=0 order by name asc', [], function(tx, results) {
 				callback(toArray(results));
 			}, errHandler);
 		});
@@ -98,17 +118,41 @@ var Database = (function() {
 	// get location id by name
 	// add new location if location DNE
 	this.getLocationId = function(name, callback) {
+		name = name.toUpperCase();
 		db.transaction(function(tx) {
 			tx.executeSql('select * from locations where name=?', [name], function(tx, results) {
 				var len = results.rows.length;
 				if(len > 0) {
-					callback(results.rows.item(0).id);
+					var id = results.rows.item(0).id;
+					if(results.rows.item(0).deleted == 1) {
+						tx.executeSql('update locations set deleted=0 where id=?', [id], null, errHandler);
+					}
+					callback(id);
 				} else {
 					tx.executeSql('insert into locations(name) values(?)', [name], function(tx, results) {
 						callback(results.insertId);
 					}, errHandler);
 				}
 			}, errHandler);
+		});
+	};
+
+	// updates the location name
+	this.updateLocation = function(id, name, callback) {
+		name = name.toUpperCase();
+		db.transaction(function(tx) {
+			tx.executeSql('update locations set name=? where id=?', [name, id], function(tx, results) {
+				callback({
+					success: true
+				});
+			}, errHandler);
+		});
+	};
+
+	// marks the location as deleted
+	this.deleteLocation = function(id) {
+		db.transaction(function(tx) {
+			tx.executeSql('update locations set deleted=1 where id=?', [id], null, errHandler);
 		});
 	};
 

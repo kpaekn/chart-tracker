@@ -4,6 +4,16 @@ var Content = function(selector) {
 	content.form = content.find('form');
 	content.list = content.find('ul');
 
+	var editPatientModal = $('#edit-patient-modal');
+	editPatientModal.first = editPatientModal.find('.first');
+	editPatientModal.last = editPatientModal.find('.last');
+	editPatientModal.birthday = editPatientModal.find('.birthday');
+	editPatientModal.saveBtn = editPatientModal.find('.save');
+
+	var editLocationModal = $('#edit-location-modal');
+	editLocationModal.name = editLocationModal.find('.name');
+	editLocationModal.saveBtn = editLocationModal.find('.save');
+
 	content.loadLists = function() {
 		setHeader('Lists', 'icon-file-text');
 		setForm('forms/lists.html', function() {
@@ -15,7 +25,7 @@ var Content = function(selector) {
 				var val = content.form.date.val();
 				Database.addList(val, function(resp) {
 					if(resp.success) {
-						// add to list
+						content.loadLists();
 					} else {
 						$.alert.show('Failed to create list: ' + resp.message);
 					}
@@ -43,32 +53,25 @@ var Content = function(selector) {
 		content.trigger('listselected');
 		setHeader(date.format('m/d/yyyy') + ' - ' + date.format('dddd'), 'icon-calendar');
 		setForm('forms/list.html', function() {
-			content.form.first = content.form.find('.first');
-			content.form.last = content.form.find('.last');
-			content.form.birthday = content.form.find('.birthday');
-			content.form.location = content.form.find('.location');
-			content.form.submit(function(e) {
+			var form = content.form;
+			form.first = form.find('.first');
+			form.last = form.find('.last').focus();
+			form.birthday = form.find('.birthday');
+			form.location = form.find('.location');
+			form.submit(function(e) {
 				e.preventDefault();
-				if(checkRequiredInputs([content.form.last, content.form.first, content.form.location])) {
-					var first = content.form.first.val().toUpperCase();
-					var last = content.form.last.val().toUpperCase();
-					var birthday = content.form.birthday.val().toUpperCase();
-					var location = content.form.location.val().toUpperCase();
-					Database.checkOutChart(id, first, last, birthday, location, function(resp) {
+				if(checkRequiredInputs([form.last, form.first, form.location])) {
+					Database.checkOutChart(id, form.first.val(), form.last.val(), form.birthday.val(), form.location.val(), function(resp) {
 						if(resp.success) {
-							content.form.find('input[type="text"]').val('');
-							content.form.last.focus();
+							content.loadList(id, date);
 						} else {
-							$('body').popupAlert({
-								body: 'Failed to check out chart: ' + resp.message
-							});
+							$.alert.show('Failed to check out chart: ' + resp.message);
 						}
 					});
 				}
 			});
 		});
 		Database.getCheckedOutCharts(id, function(charts) {
-			console.log(charts);
 			var date = new Date();
 			setList(charts, function(chart) {
 				var li = $('<li></li>');
@@ -102,11 +105,32 @@ var Content = function(selector) {
 		Database.getPatients(function(patients) {
 			setList(patients, function(patient) {
 				var li = $('<li></li>');
+				var deleteBtn = $('<span class="inline-btn"><i class="icon-remove"></i></span>');
 				var name = $('<a href="#">' + patient.last + ', ' + patient.first + ' <small>' + patient.birthday + '</small></a>');
-				li.append(name);
+				li.append(deleteBtn, name);
+				deleteBtn.click(function(e) {
+					Database.deletePatient(patient.id);
+					li.slideUp(200, function() {
+						li.remove();
+					});
+				});
 				name.click(function(e) {
 					e.preventDefault();
-
+					var m = editPatientModal;
+					m.modal('show');
+					m.first.val(patient.first);
+					m.last.val(patient.last);
+					m.birthday.val(patient.birthday);
+					m.saveBtn.button('reset');
+					m.saveBtn.click(function() {
+						if(checkRequiredInputs([m.first, m.last])) {
+							m.saveBtn.off('click').button('loading');
+							Database.updatePatient(patient.id, m.first.val(), m.last.val(), m.birthday.val(), function(resp) {
+								name.html(m.last.val() + ', ' + m.first.val() + ' <small>' + m.birthday.val() + '</small>')
+								m.modal('hide');
+							});	
+						}
+					});
 				});
 				return li;
 			});
@@ -119,7 +143,31 @@ var Content = function(selector) {
 		Database.getLocations(function(locations) {
 			setList(locations, function(location) {
 				var li = $('<li></li>');
-				li.append('<div>' + location.name + '</div>');
+				var deleteBtn = $('<span class="inline-btn"><i class="icon-remove"></i></span>');
+				var name = $('<a href="#">' + location.name + '</a>');
+				li.append(deleteBtn, name);
+				deleteBtn.click(function(e) {
+					Database.deleteLocation(location.id);
+					li.slideUp(200, function() {
+						li.remove();
+					});
+				});
+				name.click(function(e) {
+					e.preventDefault();
+					var m = editLocationModal;
+					m.modal('show');
+					m.name.val(location.name);
+					m.saveBtn.button('reset');
+					m.saveBtn.click(function() {
+						if(checkRequiredInputs([m.name])) {
+							m.saveBtn.off('click').button('loading');
+							Database.updateLocation(location.id, m.name.val(), function(resp) {
+								name.html(m.name.val());
+								m.modal('hide');
+							});	
+						}
+					});
+				});
 				return li;
 			});
 		});
@@ -141,7 +189,9 @@ var Content = function(selector) {
 			content.form.load(url, {}, callback);
 	}
 
+	var intervalId = 0;
 	function setList(items, toDom){
+		clearInterval(intervalId);
 		content.list.empty();
 		if(items) {
 			var len = items.length, i, NUM = 50;
@@ -150,27 +200,14 @@ var Content = function(selector) {
 				content.list.append(toDom(items[i]));
 			}
 			if(len > target) {
-				var load = $('<div><button class="btn btn-sm btn-default more">Load More</button> <button class="btn btn-xs btn-default all">Load All</button></div>');
-				load.more = load.find('.more');
-				load.all = load.find('.all');
-				content.list.append(load);
-
-				load.more.click(function(e) {
+				intervalId = setInterval(function() {
 					target = Math.min(target + NUM, len);
 					while(i < target) {
 						content.list.append(toDom(items[i]));
 						i++;
 					}
-					if(target == len) load.remove();
-				});
-				load.all.click(function(e) {
-					target = len;
-					while(i < target) {
-						content.list.append(toDom(items[i]));
-						i++;
-					}
-					load.remove();
-				});
+					if(target == len) clearInterval(timerId);
+				}, 200);
 			}
 		}
 	};
