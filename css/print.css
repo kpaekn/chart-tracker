@@ -1,4 +1,4 @@
- header, .content form, i[class*="icon-"], .inline-btn {
+ header, .content form, i[class*="icon-"], .inline-btn-group, .inline-btn {
 	display: none !important;
 }
 .content {

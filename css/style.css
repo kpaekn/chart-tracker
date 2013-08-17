@@ -56,36 +56,68 @@ header ul li a:hover {
   margin-top: 10px;
   padding: 0;
 }
+.content > ul li {
+  border-top: 1px solid #f1f1f1;
+}
+.content > ul li:last-child {
+  border-bottom: 1px solid #f1f1f1;
+}
 .content > ul li > * {
   display: inline-block;
+  vertical-align: middle;
 }
-.content > ul li > *.name {
+.content > ul li .name {
   text-transform: uppercase;
   width: 180px;
 }
-.content > ul li > *.location {
+.content > ul li .location {
   text-transform: uppercase;
   width: 140px;
 }
-.content > ul li > *.time {
+.content > ul li .time {
   width: 70px;
 }
-.content > ul li > *.time-arrow {
+.content > ul li .time-arrow {
   font-size: 14pt;
   font-weight: bold;
   line-height: 1;
   text-align: center;
   width: 20px;
 }
-.content > ul li > *.inline-btn {
+.content > ul li .inline-btn-group {
+  margin-right: 5px;
+  overflow: auto;
+}
+.content > ul li .inline-btn-group .inline-btn {
+  display: block;
+  float: left;
+  margin-right: 0;
+}
+.content > ul li .inline-btn {
   border: 1px solid transparent;
   margin-right: 5px;
-  padding: 0 5px;
   text-align: center;
+  width: 24px;
 }
-.content > ul li > *.inline-btn:hover {
+.content > ul li .inline-btn:hover {
   background-color: #e5e5e5;
   border-color: #d8d8d8;
+}
+.content > ul li .inline-btn.return {
+  display: block;
+}
+.content > ul li .inline-btn.un-return {
+  display: none;
+}
+.content > ul li.returned {
+  background-color: #e5e5e5;
+  opacity: 0.7;
+}
+.content > ul li.returned .return {
+  display: none;
+}
+.content > ul li.returned .un-return {
+  display: block;
 }
 .modal input[type="text"] {
   text-transform: uppercase;

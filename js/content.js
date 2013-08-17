@@ -73,17 +73,7 @@ var Content = function(selector) {
 		});
 		Database.getCheckedOutCharts(id, function(charts) {
 			var date = new Date();
-			setList(charts, function(chart) {
-				var li = $('<li></li>');
-				var name = $('<span class="name">' + chart.last + ', ' + chart.first + ' <small>' + chart.birthday + '</small></span>');
-				var location = $('<span class="location">' + chart.location + '</span>');
-				var checkOutTime = $('<span class="time text-right">' + dateFormat(chart.checkOutTime, 'H:MMt') + '</span>');
-				var timeArrow = $('<span class="time-arrow">&raquo;</span>');
-				var returnTime = (chart.returnTime == -1) ? 'N/A' : dateFormat(chart.returnTime, 'H:MMt');
-					returnTime = $('<span class="time">' + returnTime + '</span>');
-				li.append(name, location, checkOutTime, timeArrow, returnTime);
-				return li;
-			});
+			setList(charts, createChartListItem);
 		});
 	};
 
@@ -96,17 +86,7 @@ var Content = function(selector) {
 			});
 		});
 		Database.getOutstandingCharts(function(charts) {
-			setList(charts, function(chart) {
-				var li = $('<li></li>');
-				var name = $('<span class="name">' + chart.last + ', ' + chart.first + ' <small>' + chart.birthday + '</small></span>');
-				var location = $('<span class="location">' + chart.location + '</span>');
-				var checkOutTime = $('<span class="time text-right">' + dateFormat(chart.checkOutTime, 'H:MMt') + '</span>');
-				var timeArrow = $('<span class="time-arrow">&raquo;</span>');
-				var returnTime = (chart.returnTime == -1) ? 'N/A' : dateFormat(chart.returnTime, 'H:MMt');
-					returnTime = $('<span class="time">' + returnTime + '</span>');
-				li.append(name, location, checkOutTime, timeArrow, returnTime);
-				return li;
-			});
+			setList(charts, createChartListItem);
 		});
 	};
 
@@ -244,6 +224,56 @@ var Content = function(selector) {
 			}
 		}
 		return true;
+	}
+
+	function createChartListItem(chart) {
+		var li = $('<li></li>');
+		var btnGroup = $('<span class="inline-btn-group"></span>');
+		var deleteBtn = $('<span class="inline-btn"><i class="icon-remove"></i></span>');
+		var returnBtn = $('<span class="inline-btn return"><i class="icon-ok"></i></span>');
+		var unReturnBtn = $('<span class="inline-btn un-return"><i class="icon-undo"></i></span>');
+		btnGroup.append(deleteBtn, returnBtn, unReturnBtn);
+		var name = $('<span class="name">' + chart.last + ', ' + chart.first + ' <small>' + chart.birthday + '</small></span>');
+		var location = $('<span class="location">' + chart.location + '</span>');
+		var checkOutTime = $('<span class="time text-right">' + dateFormat(chart.checkOutTime, 'h:MMt') + '</span>');
+		var timeArrow = $('<span class="time-arrow">&raquo;</span>');
+		var returnTime = (chart.returnTime == -1) ? 'n/a' : dateFormat(chart.returnTime, 'h:MMt');
+			returnTime = $('<span class="time">' + returnTime + '</span>');
+		li.append(btnGroup, name, location, checkOutTime, timeArrow, returnTime);
+
+		if(chart.returnTime !== -1) {
+			li.addClass('returned');
+		}
+
+		deleteBtn.click(function() {
+			Database.deleteCheckedOutChart(chart.id, function(resp) {
+				if(resp.success) {
+					li.slideUp(200, function(){
+						li.remove();
+					});
+				}
+			});
+		});
+
+		returnBtn.click(function() {
+			Database.returnChart(chart.id, function(resp) {
+				if(resp.success) {
+					li.addClass('returned');
+					returnTime.html(dateFormat(resp.returnTime, 'h:MMt'));
+				}
+			});
+		});
+
+		unReturnBtn.click(function() {
+			Database.unReturnChart(chart.id, function(resp) {
+				if(resp.success) {
+					li.removeClass('returned');
+					returnTime.html('n/a');
+				}
+			});
+		});
+
+		return li;
 	}
 
 	return content;

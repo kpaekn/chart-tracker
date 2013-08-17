@@ -202,5 +202,39 @@ var Database = (function() {
 		});
 	};
 
+	// delete the checked out record. as if it was never checked out
+	this.deleteCheckedOutChart = function(id, callback) {
+		db.transaction(function(tx) {
+			tx.executeSql('delete from checkedOutCharts where id=?', [id], function(tx, results) {
+				callback({
+					success: true
+				});
+			}, errHandler);
+		});
+	};
+
+	// returns the chart
+	this.returnChart = function(id, callback) {
+		db.transaction(function(tx) {
+			var currTime = (new Date()).getTime();
+			tx.executeSql('update checkedOutCharts set returnTime=? where id=?', [currTime, id], function(tx, results) {
+				callback({
+					success: true,
+					returnTime: currTime
+				});
+			}, errHandler);
+		});
+	};
+
+	this.unReturnChart = function(id, callback) {
+		db.transaction(function(tx) {
+			tx.executeSql('update checkedOutCharts set returnTime=-1 where id=?', [id], function(tx, results) {
+				callback({
+					success: true
+				});
+			}, errHandler);
+		});
+	};
+
 	return this;
 }());
