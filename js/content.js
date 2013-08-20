@@ -97,7 +97,7 @@ var Content = function(selector) {
 		Database.getPatients(function(patients) {
 			setList(patients, function(patient) {
 				var li = $('<li></li>');
-				var deleteBtn = $('<span class="inline-btn"><i class="icon-remove"></i></span>');
+				var deleteBtn = $('<span class="inline-btn" title="Delete"><i class="icon-remove"></i></span>');
 				var name = $('<a href="#">' + patient.last + ', ' + patient.first + ' <small>' + patient.birthday + '</small></a>');
 				li.append(deleteBtn, name);
 				deleteBtn.click(function(e) {
@@ -105,7 +105,7 @@ var Content = function(selector) {
 					li.slideUp(200, function() {
 						li.remove();
 					});
-				});
+				}).tooltip();
 				name.click(function(e) {
 					e.preventDefault();
 					var m = editPatientModal;
@@ -135,7 +135,7 @@ var Content = function(selector) {
 		Database.getLocations(function(locations) {
 			setList(locations, function(location) {
 				var li = $('<li></li>');
-				var deleteBtn = $('<span class="inline-btn"><i class="icon-remove"></i></span>');
+				var deleteBtn = $('<span class="inline-btn" title="Delete"><i class="icon-remove"></i></span>');
 				var name = $('<a href="#">' + location.name + '</a>');
 				li.append(deleteBtn, name);
 				deleteBtn.click(function(e) {
@@ -143,7 +143,7 @@ var Content = function(selector) {
 					li.slideUp(200, function() {
 						li.remove();
 					});
-				});
+				}).tooltip();
 				name.click(function(e) {
 					e.preventDefault();
 					var m = editLocationModal;
@@ -229,22 +229,23 @@ var Content = function(selector) {
 	function createChartListItem(chart) {
 		var li = $('<li></li>');
 		var btnGroup = $('<span class="inline-btn-group"></span>');
-		var deleteBtn = $('<span class="inline-btn"><i class="icon-remove"></i></span>');
-		var returnBtn = $('<span class="inline-btn return"><i class="icon-ok"></i></span>');
-		var unReturnBtn = $('<span class="inline-btn un-return"><i class="icon-undo"></i></span>');
+		var deleteBtn = $('<span class="inline-btn" title="Delete"><i class="icon-remove"></i></span>');
+		var returnBtn = $('<span class="inline-btn return" title="Return"><i class="icon-ok"></i></span>');
+		var unReturnBtn = $('<span class="inline-btn un-return" title="Un-Return"><i class="icon-undo"></i></span>');
 		btnGroup.append(deleteBtn, returnBtn, unReturnBtn);
 		var name = $('<span class="name">' + chart.last + ', ' + chart.first + ' <small>' + chart.birthday + '</small></span>');
 		var location = $('<span class="location">' + chart.location + '</span>');
-		var checkOutTime = $('<span class="time text-right">' + dateFormat(chart.checkOutTime, 'h:MMt') + '</span>');
+		var checkOutTime = $('<span class="time check-out-time text-right">' + dateFormat(chart.checkOutTime, 'm/d/yy@h:MMt') + '</span>');
 		var timeArrow = $('<span class="time-arrow">&raquo;</span>');
-		var returnTime = (chart.returnTime == -1) ? 'n/a' : dateFormat(chart.returnTime, 'h:MMt');
-			returnTime = $('<span class="time">' + returnTime + '</span>');
+		var returnTime = (chart.returnTime == -1) ? 'n/a' : dateFormat(chart.returnTime, 'm/d/yy@h:MMt');
+			returnTime = $('<span class="time return-time">' + returnTime + '</span>');
 		li.append(btnGroup, name, location, checkOutTime, timeArrow, returnTime);
 
 		if(chart.returnTime !== -1) {
 			li.addClass('returned');
 		}
 
+		li.find('.inline-btn').tooltip();
 		deleteBtn.click(function() {
 			Database.deleteCheckedOutChart(chart.id, function(resp) {
 				if(resp.success) {
@@ -254,16 +255,14 @@ var Content = function(selector) {
 				}
 			});
 		});
-
 		returnBtn.click(function() {
 			Database.returnChart(chart.id, function(resp) {
 				if(resp.success) {
 					li.addClass('returned');
-					returnTime.html(dateFormat(resp.returnTime, 'h:MMt'));
+					returnTime.html(dateFormat(resp.returnTime, 'm/d/yy@h:MMt'));
 				}
 			});
 		});
-
 		unReturnBtn.click(function() {
 			Database.unReturnChart(chart.id, function(resp) {
 				if(resp.success) {
