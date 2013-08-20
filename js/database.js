@@ -15,8 +15,6 @@ var Database = (function() {
 
 	var db = openDatabase('ct1', '1.0', 'Chart Tracker', 2 * 1024 * 1024);
 	db.transaction(function(tx) {
-
-
 		tx.executeSql('create table if not exists lists(id integer primary key, date integer)', [], null, errHandler);
 		tx.executeSql('create table if not exists patients(id integer primary key, first varchar(50), last varchar(50), birthday varchar(50), deleted integer default 0)', [], null, errHandler);
 		tx.executeSql('create table if not exists locations(id integer primary key, name varchar(50), deleted integer default 0)', [], null, errHandler);
@@ -168,7 +166,7 @@ var Database = (function() {
 	// gets all checked out chart that have not been returned
 	this.getOutstandingCharts = function(callback) {
 		db.transaction(function(tx) {
-			tx.executeSql('select C.*, P.first, P.last, P.birthday, L.name as location from checkedOutCharts C, patients P, locations L where C.patientId=P.id and C.locationId=L.id and returnTime=-1', [], function(tx, results) {
+			tx.executeSql('select C.*, P.first, P.last, P.birthday, L.name as location from checkedOutCharts C, patients P, locations L where C.patientId=P.id and C.locationId=L.id and returnTime=-1 order by P.last, P.first, P.birthday asc', [], function(tx, results) {
 				callback(toArray(results));
 			}, errHandler);
 		});
