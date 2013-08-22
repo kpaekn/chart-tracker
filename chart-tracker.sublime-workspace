@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"ch",
+				"checkedOutCharts"
+			],
+			[
 				"ret",
 				"return"
 			],
@@ -352,10 +356,6 @@
 				"charts"
 			],
 			[
-				"ch",
-				"charts"
-			],
-			[
 				"ba",
 				"background-color"
 			],
@@ -537,18 +537,10 @@
 			}
 		},
 		{
-			"file": "index.html",
-			"settings":
-			{
-				"buffer_size": 3304,
-				"line_ending": "Windows"
-			}
-		},
-		{
 			"file": "js/content.js",
 			"settings":
 			{
-				"buffer_size": 8352,
+				"buffer_size": 8462,
 				"line_ending": "Windows"
 			}
 		},
@@ -556,7 +548,15 @@
 			"file": "js/database.js",
 			"settings":
 			{
-				"buffer_size": 7955,
+				"buffer_size": 8169,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "js/bootstrap-typeahead.js",
+			"settings":
+			{
+				"buffer_size": 1019,
 				"line_ending": "Windows"
 			}
 		}
@@ -657,12 +657,13 @@
 	},
 	"file_history":
 	[
+		"/C/Development/node-webkit/projects/chart-tracker/index.html",
+		"/C/Development/node-webkit/projects/chart-tracker/forms/lists.html",
 		"/C/Development/node-webkit/projects/chart-tracker/package.json",
 		"/C/Development/node-webkit/projects/chart-tracker/forms/list.html",
 		"/C/Development/node-webkit/projects/chart-tracker/js/bootstrap-popupAlert.js",
 		"/C/Development/node-webkit/projects/chart-tracker/js/bootstrap-select.js",
 		"/C/Development/node-webkit/projects/chart-tracker/js/scripts.js",
-		"/C/Development/node-webkit/projects/chart-tracker/forms/lists.html",
 		"/C/Development/node-webkit/projects/chart-tracker/forms/outstanding.html",
 		"/C/Development/node-webkit/projects/chart-tracker/js/bootstrap-select.min.js",
 		"/C/Development/node-webkit/projects/chart-tracker/css/bootstrap.min.css",
@@ -685,7 +686,6 @@
 		"/C/Development/node-webkit/projects/chart-tracker/test_in_chrome.bat",
 		"/C/Development/node-webkit/projects/chart-tracker/css/style.css",
 		"/C/Development/node-webkit/projects/chart-tracker/css/style.less",
-		"/C/Development/node-webkit/projects/chart-tracker/index.html",
 		"/C/Development/node-webkit/projects/chart-tracker/css/reset.css",
 		"/C/Development/node-webkit/projects/chart-tracker/css/font.css",
 		"/C/Development/Haxe/projects/charter/application.nmml",
@@ -950,7 +950,7 @@
 	"groups":
 	[
 		{
-			"selected": 3,
+			"selected": 4,
 			"sheets":
 			[
 				{
@@ -1009,45 +1009,18 @@
 				},
 				{
 					"buffer": 2,
-					"file": "index.html",
-					"settings":
-					{
-						"buffer_size": 3304,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2413,
-								2413
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 3,
 					"file": "js/content.js",
 					"settings":
 					{
-						"buffer_size": 8352,
+						"buffer_size": 8462,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7327,
-								7327
+								1821,
+								1821
 							]
 						],
 						"settings":
@@ -1056,25 +1029,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2913.0,
+						"translation.y": 435.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 3,
 					"file": "js/database.js",
 					"settings":
 					{
-						"buffer_size": 7955,
+						"buffer_size": 8169,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7760,
-								7760
+								630,
+								630
 							]
 						],
 						"settings":
@@ -1084,7 +1057,34 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2630.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "js/bootstrap-typeahead.js",
+					"settings":
+					{
+						"buffer_size": 1019,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								107,
+								107
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1190,11 +1190,15 @@
 	},
 	"select_project":
 	{
-		"height": 0.0,
+		"height": 500.0,
 		"selected_items":
 		[
+			[
+				"bib",
+				"/C/Development/Haxe/projects/bible/bible.sublime-project"
+			]
 		],
-		"width": 0.0
+		"width": 380.0
 	},
 	"show_minimap": true,
 	"show_open_files": false,

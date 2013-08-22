@@ -1,0 +1,14 @@
+{
+	"name": "chart-tracker",
+	"main": "index.html",
+	"version": "0.1.0",
+	"window": {
+		"title": "Chart Tracker",
+		"frame": true,
+		"width": 1000,
+		"height": 700,
+		"min_width": 700,
+		"min_height": 500,
+		"toolbar": true
+	}
+}

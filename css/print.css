@@ -1,9 +1,0 @@
- header, .content form, i[class*="icon-"], .inline-btn-group, .inline-btn {
-	display: none !important;
-}
-.content {
-	margin-top: -1em !important;
-}
-a {
-	text-decoration: none;
-}

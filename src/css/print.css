@@ -1,0 +1,26 @@
+header,
+.content form,
+i[class*="icon-"],
+.inline-btn-group,
+.inline-btn {
+  display: none !important;
+}
+.content {
+  margin-top: -1em !important;
+}
+.content > ul li .name {
+  padding-left: 0;
+  width: 32% !important;
+}
+.content > ul li .location {
+  width: 25% !important;
+}
+.content > ul li .time {
+  width: 20% !important;
+}
+.content > ul li .time-arrow {
+  width: 3% !important;
+}
+a {
+  text-decoration: none;
+}

@@ -1,0 +1,138 @@
+@import url('bootstrap.min.css');
+@import url('font-awesome.min.css');
+@import url('print.css') print;
+
+@header-height: 30px;
+
+header {
+	background-color: #f1f1f1;
+	ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		overflow: auto;
+		li {
+			float: left;
+			a {
+				color: #333;
+				display: block;
+				font-size: 11pt;
+				font-weight: bold;
+				line-height: @header-height;
+				padding: 0 10px;
+				text-decoration: none !important;
+				transition: 0.1s linear;
+				&.active, &:hover {
+					background-color: #08c;
+					color: #fff;
+				}
+			}
+		}
+	}
+}
+.content {
+	padding: 10px;
+	> h1 {
+		font-size: 29px;
+		font-weight: bold;
+		margin: 0 0 10px;
+	}
+	> form {
+		&.form-inline {
+			> * {
+				vertical-align: bottom;
+				margin: 0.5em 0 0;
+			}
+			input[type="text"] {
+				text-transform: capitalize;
+				width: 200px;
+			}
+			.form-group {
+				display: inline-block;
+				label {
+					display: block;
+				}
+			}
+		}
+	}
+	> ul {
+		list-style: none;
+		margin-top: 10px;
+		padding: 0;
+		li {
+			border-top: 1px solid #f1f1f1;
+			overflow: auto;
+			&:last-child {
+				border-bottom: 1px solid #f1f1f1;
+			}
+			> * {
+				display: block;
+				float: left;
+				vertical-align: middle;
+				line-height: 20px;
+			}
+			.name {
+				padding-left: 0.3em;
+				text-transform: capitalize;
+				small {
+					color: #888;
+				}
+			}
+			span.name {
+				width: 25%;
+			}
+			.location {
+				text-transform: capitalize;
+				width: 20%;
+			}
+			.time {
+				width: 20%;
+			}
+			.time-arrow {
+				font-size: 14pt;
+				font-weight: bold;
+				line-height: 1;
+				text-align: center;
+				width: 2%;
+			}
+			.inline-btn {
+				padding: 0 0.1em;
+				text-align: center;
+				width: 25px;
+				&:hover {
+					background-color: #e5e5e5;
+					border-color: #d8d8d8;
+				}
+				&.return {
+					display: block;
+				}
+				&.un-return {
+					display: none;
+				}
+			}
+			&.returned {
+				background-color: #e5e5e5;
+				opacity: 0.7;
+				.return {
+					display: none;
+				}
+				.un-return {
+					display: block;
+				}
+				.name {
+					text-decoration: line-through;
+				}
+			}
+		}
+	}
+}
+.modal input[type="text"] {
+	text-transform: capitalize;
+}
+.typeahead.dropdown-menu {
+	width: 200px;
+	z-index: 10000;
+	li a {
+		text-transform: capitalize;
+	}
+}
