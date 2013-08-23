@@ -15,18 +15,61 @@ var Database = (function() {
 
 	var db = openDatabase('ct1', '1.0', 'Chart Tracker', 2 * 1024 * 1024);
 	db.transaction(function(tx) {
-		/*
+		
 		tx.executeSql('drop table if exists lists');
 		tx.executeSql('drop table if exists patients');
 		tx.executeSql('drop table if exists locations');
 		tx.executeSql('drop table if exists checkedOutCharts');
-		*/
 		
 		tx.executeSql('create table if not exists lists(id integer primary key, date integer)', [], null, errHandler);
 		tx.executeSql('create table if not exists patients(id integer primary key, first varchar(50), last varchar(50), birthday varchar(50), deleted integer default 0)', [], null, errHandler);
 		tx.executeSql('create table if not exists locations(id integer primary key, name varchar(50), deleted integer default 0)', [], null, errHandler);
 		tx.executeSql('create table if not exists checkedOutCharts(id integer primary key, listId integer, patientId integer, locationId integer, checkOutTime integer, returnTime integer default -1)', [], null, errHandler);
 	});
+
+	var queue = [];
+	var queueNext = function(tx) {
+		if(queue.length > 0) {
+			(queue.shift())(tx);
+		}
+	};
+	this.importData = function(data, callback) {
+		var query, i, list, p, loc, chart;
+		db.transaction(function(tx) {
+			// inserting lists
+			query = ['insert into lists(date)',
+					 'select * from (select ?) as tmp',
+					 'where not exists (',
+					 	'select date from lists where date=?',
+					 ') limit 1'].join(' ');
+
+			for(i = 0; i < data.lists.length; i++) {
+				list = data.lists[i];
+				tx.executeSql(query, [list.date, list.date], null, errHandler);
+			}
+			// inserting patients
+			query = ['insert into patients(first, last, birthday)',
+					 'select * from (select ?,?,?) as tmp',
+					 'where not exists (',
+					 	'select first, last, birthday from patients where first=? and last=? and birthday=?',
+					 ') limit 1'].join(' ');
+			for(i = 0; i < data.patients.length; i++) {
+				p = data.patients[i];
+				tx.executeSql(query, [p.first, p.last, p.birthday, p.first, p.last, p.birthday], null, errHandler);
+			}
+			// inserting locations
+			query = ['insert into locations(name)',
+					 'select * from (select ?) as tmp',
+					 'where not exists (',
+					 	'select name from locations where name=?',
+					 ') limit 1'].join(' ');
+			for(i = 0; i < data.locations.length; i++) {
+				loc = data.locations[i];
+				tx.executeSql(query, [loc.name, loc.name], null, errHandler);
+			}
+			// inserting charts checked out
+		});
+	};
 
 	// gets all lists sorted by date (desc)
 	this.getLists = function(callback) {
@@ -60,7 +103,7 @@ var Database = (function() {
 	};
 
 	// gets all patients
-	this.getPatients = function(callback, orderby) {
+	this.getPatients = function(callback) {
 		db.transaction(function(tx) {
 			tx.executeSql('select * from patients where deleted=0 order by last, first, birthday asc', [], function(tx, results) {
 				callback(toArray(results));
@@ -164,13 +207,20 @@ var Database = (function() {
 	// gets all checked out charts for the given list
 	this.getCheckedOutCharts = function(listId, callback) {
 		db.transaction(function(tx) {
-			tx.executeSql([
-				'select C.*, P.first, P.last, P.birthday, L.name as location',
-				'from checkedOutCharts C, patients P, locations L',
-				'where listId=? and C.patientId=P.id and C.locationId=L.id',
-				'order by P.last, P.first, P.birthday asc'].join(' '), [listId], function(tx, results) {
-				callback(toArray(results));
-			}, errHandler);
+			if(typeof(listId) == 'function') {
+				callback = listId;
+				tx.executeSql('select * from checkedOutCharts', [], function(tx, results) {
+					callback(toArray(results));
+				}, errHandler);
+			} else {
+				tx.executeSql([
+					'select C.*, P.first, P.last, P.birthday, L.name as location',
+					'from checkedOutCharts C, patients P, locations L',
+					'where listId=? and C.patientId=P.id and C.locationId=L.id',
+					'order by P.last, P.first, P.birthday asc'].join(' '), [listId], function(tx, results) {
+					callback(toArray(results));
+				}, errHandler);
+			}
 		});
 	};
 
