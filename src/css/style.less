@@ -6,14 +6,14 @@
 
 header {
 	background-color: #f1f1f1;
-	ul {
+	ul:not(.dropdown-menu) {
 		list-style: none;
 		margin: 0;
 		padding: 0;
-		overflow: auto;
-		li {
+		> li {
 			float: left;
-			a {
+			position: relative;
+			> a {
 				color: #333;
 				display: block;
 				font-size: 11pt;
@@ -28,6 +28,10 @@ header {
 				}
 			}
 		}
+	}
+	.dropdown-menu {
+		right: 0;
+		left: auto;
 	}
 }
 .content {

@@ -6,16 +6,16 @@
 header {
   background-color: #f1f1f1;
 }
-header ul {
+header ul:not(.dropdown-menu) {
   list-style: none;
   margin: 0;
   padding: 0;
-  overflow: auto;
 }
-header ul li {
+header ul:not(.dropdown-menu) > li {
   float: left;
+  position: relative;
 }
-header ul li a {
+header ul:not(.dropdown-menu) > li > a {
   color: #333;
   display: block;
   font-size: 11pt;
@@ -25,10 +25,14 @@ header ul li a {
   text-decoration: none !important;
   transition: 0.1s linear;
 }
-header ul li a.active,
-header ul li a:hover {
+header ul:not(.dropdown-menu) > li > a.active,
+header ul:not(.dropdown-menu) > li > a:hover {
   background-color: #08c;
   color: #fff;
+}
+header .dropdown-menu {
+  right: 0;
+  left: auto;
 }
 .content {
   padding: 10px;
