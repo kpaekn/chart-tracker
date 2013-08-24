@@ -92,16 +92,27 @@ settingsMenu.delete.click(function(e) {
 	e.preventDefault();
 	var m = deleteDatabaseModal;
 	m.modal('show');
-	m.deleteBtn.val('Delete Database').addClass('disabled').off('click');
-	m.confirm.val('').off('keyup');
+	
+	m.deleteBtn.button('reset');
+	setTimeout(function() {
+		m.deleteBtn.attr('disabled', true);
+	}, 200);
+
+	m.confirm.val('');
+
 	m.confirm.keyup(function(e) {
 		if(m.confirm.val().toLowerCase() == 'delete') {
-			m.deleteBtn.removeClass('disabled');
+			m.deleteBtn.attr('disabled', false);
 			m.deleteBtn.click(function() {
-				
-			})
+				m.deleteBtn.button('loading');
+				Database.deleteDatabase(function() {
+					m.modal('hide');
+					header.find('a').first().click();
+					$.alert.show('The database has been deleted.');
+				});
+			});
 		} else {
-			m.deleteBtn.addClass('disabled').off('click');
+			m.deleteBtn.attr('disabled', true).off('click');
 		}
 	});
 });

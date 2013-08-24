@@ -68,15 +68,16 @@ var Database = (function() {
 		var count = 0;
 		var complete = function() {
 			count++;
+			console.log(count);
 			if(count == 4) {
 				callback();
 			}
 		};
 		db.transaction(function(tx) {
-			tx.executeSql('truncate table lists', [], complete);
-			tx.executeSql('truncate table patients', [], complete);
-			tx.executeSql('truncate table locations', [], complete);
-			tx.executeSql('truncate table checkedOutCharts', [], complete);
+			tx.executeSql('delete from lists', [], complete, errHandler);
+			tx.executeSql('delete from patients', [], complete, errHandler);
+			tx.executeSql('delete from locations', [], complete, errHandler);
+			tx.executeSql('delete from checkedOutCharts', [], complete, errHandler);
 		});
 	};
 

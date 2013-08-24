@@ -130,8 +130,14 @@ header {
 		}
 	}
 }
-.modal input[type="text"] {
-	text-transform: uppercase;
+body.modal-open {
+	margin-right: 0;
+}
+.modal {
+	overflow-y: auto;
+	input[type="text"] {
+		text-transform: uppercase;
+	}
 }
 .typeahead.dropdown-menu {
 	width: 200px;
