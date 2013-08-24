@@ -1,3 +1,2 @@
-app.nw
-dist
 *.sublime-*
+src/app.nw
