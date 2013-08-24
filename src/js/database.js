@@ -15,12 +15,12 @@ var Database = (function() {
 
 	var db = openDatabase('ct1', '1.0', 'Chart Tracker', 2 * 1024 * 1024);
 	db.transaction(function(tx) {
-		
+		/*
 		tx.executeSql('drop table if exists lists');
 		tx.executeSql('drop table if exists patients');
 		tx.executeSql('drop table if exists locations');
 		tx.executeSql('drop table if exists checkedOutCharts');
-		
+		*/
 		tx.executeSql('create table if not exists lists(id integer primary key, date integer)', [], null, errHandler);
 		tx.executeSql('create table if not exists patients(id integer primary key, first varchar(50), last varchar(50), birthday varchar(50), deleted integer default 0)', [], null, errHandler);
 		tx.executeSql('create table if not exists locations(id integer primary key, name varchar(50), deleted integer default 0)', [], null, errHandler);
@@ -63,6 +63,22 @@ var Database = (function() {
 			}
 		}
 	}
+
+	obj.deleteDatabase = function(callback) {
+		var count = 0;
+		var complete = function() {
+			count++;
+			if(count == 4) {
+				callback();
+			}
+		};
+		db.transaction(function(tx) {
+			tx.executeSql('truncate table lists', [], complete);
+			tx.executeSql('truncate table patients', [], complete);
+			tx.executeSql('truncate table locations', [], complete);
+			tx.executeSql('truncate table checkedOutCharts', [], complete);
+		});
+	};
 
 	// gets all lists sorted by date (desc)
 	obj.getLists = function(callback) {

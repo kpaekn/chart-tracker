@@ -46,6 +46,11 @@ header.find('a').first().click();
 /* Export/Import
  ==========================================*/
 var fs = require('fs');
+
+var deleteDatabaseModal = $('#delete-database-modal');
+deleteDatabaseModal.confirm = deleteDatabaseModal.find('.confirm');
+deleteDatabaseModal.deleteBtn = deleteDatabaseModal.find('.delete');
+
 var settingsLink = $('a.settings');
 settingsLink.find('a').click(function(e) {
 	e.preventDefault();
@@ -54,6 +59,7 @@ settingsLink.find('a').click(function(e) {
 var settingsMenu = $('ul.settings');
 settingsMenu.export = settingsMenu.find('.export');
 settingsMenu.import = settingsMenu.find('.import');
+settingsMenu.delete = settingsMenu.find('.delete');
 
 settingsMenu.export.click(function(e) {
 	e.preventDefault();
@@ -81,6 +87,23 @@ settingsMenu.import.click(function(e) {
 			}
 		});
 	}).click();
+});
+settingsMenu.delete.click(function(e) {
+	e.preventDefault();
+	var m = deleteDatabaseModal;
+	m.modal('show');
+	m.deleteBtn.val('Delete Database').addClass('disabled').off('click');
+	m.confirm.val('').off('keyup');
+	m.confirm.keyup(function(e) {
+		if(m.confirm.val().toLowerCase() == 'delete') {
+			m.deleteBtn.removeClass('disabled');
+			m.deleteBtn.click(function() {
+				
+			})
+		} else {
+			m.deleteBtn.addClass('disabled').off('click');
+		}
+	});
 });
 
 function saveFile(filename, data) {
