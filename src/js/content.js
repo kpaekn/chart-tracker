@@ -34,6 +34,7 @@ var Content = function(selector) {
 		});
 
 		Database.getLists(function(lists) {
+			console.log(lists);
 			setList(lists, function(list) {
 				var li = $('<li></li>');
 				var date = new Date(list.date);

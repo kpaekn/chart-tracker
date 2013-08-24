@@ -1,11 +1,11 @@
 var Database = (function() {
 
-	var errHandler = function(tx, err) {
+	function errHandler(tx, err) {
 		console.log(err);
-	};
+	}
 
 	// converts a Transaction result to an Array
-	var toArray = function(results) {
+	function toArray(results) {
 		var len = results.rows.length, i, items = [];
 		for(i = 0; i < len; i++) {
 			items.push(results.rows.item(i));
@@ -27,52 +27,45 @@ var Database = (function() {
 		tx.executeSql('create table if not exists checkedOutCharts(id integer primary key, listId integer, patientId integer, locationId integer, checkOutTime integer, returnTime integer default -1)', [], null, errHandler);
 	});
 
-	var queue = [];
-	var queueNext = function(tx) {
-		if(queue.length > 0) {
-			(queue.shift())(tx);
-		}
-	};
-	this.importData = function(data, callback) {
-		var query, i, list, p, loc, chart;
+	var obj = {};
+	obj.exportData = function(callback) {
 		db.transaction(function(tx) {
-			// inserting lists
-			query = ['insert into lists(date)',
-					 'select * from (select ?) as tmp',
-					 'where not exists (',
-					 	'select date from lists where date=?',
-					 ') limit 1'].join(' ');
-
-			for(i = 0; i < data.lists.length; i++) {
-				list = data.lists[i];
-				tx.executeSql(query, [list.date, list.date], null, errHandler);
-			}
-			// inserting patients
-			query = ['insert into patients(first, last, birthday)',
-					 'select * from (select ?,?,?) as tmp',
-					 'where not exists (',
-					 	'select first, last, birthday from patients where first=? and last=? and birthday=?',
-					 ') limit 1'].join(' ');
-			for(i = 0; i < data.patients.length; i++) {
-				p = data.patients[i];
-				tx.executeSql(query, [p.first, p.last, p.birthday, p.first, p.last, p.birthday], null, errHandler);
-			}
-			// inserting locations
-			query = ['insert into locations(name)',
-					 'select * from (select ?) as tmp',
-					 'where not exists (',
-					 	'select name from locations where name=?',
-					 ') limit 1'].join(' ');
-			for(i = 0; i < data.locations.length; i++) {
-				loc = data.locations[i];
-				tx.executeSql(query, [loc.name, loc.name], null, errHandler);
-			}
-			// inserting charts checked out
+			tx.executeSql(['select Li.date, P.first, P.last, P.birthday, Lo.name as location, C.checkOutTime, C.returnTime',
+						   'from lists Li, patients P, locations Lo, checkedOutCharts C',
+						   'where C.listId=Li.id and C.patientId=P.id and C.locationId=Lo.id'].join(' '), [], function(tx, results) {
+				callback(toArray(results));
+			}, errHandler);
 		});
 	};
+	obj.importData = function(data, callback) {
+		helper(data, callback);
+	};
+
+	function helper(arr, callback) {
+		if(arr.length > 0) {
+			var data = arr.shift();
+			obj.getListId(data.date, function(listId) {
+				obj.getPatientId(data.first, data.last, data.birthday, function(patientId) {
+					obj.getLocationId(data.location, function(locationId) {
+						console.log('list: ' + listId + ', patient: ' + patientId + ', location: ' + locationId);
+						db.transaction(function(tx) {
+							tx.executeSql('insert into checkedOutCharts(listId, patientId, locationId, checkOutTime, returnTime) values(?,?,?,?,?)',
+													[listId, patientId, locationId, data.checkOutTime, data.returnTime], function(tx, results) {
+								helper(arr, callback);
+							}, errHandler);
+						});
+					});
+				});
+			});
+		} else {
+			if(typeof(callback) == 'function') {
+				callback();	
+			}
+		}
+	}
 
 	// gets all lists sorted by date (desc)
-	this.getLists = function(callback) {
+	obj.getLists = function(callback) {
 		db.transaction(function(tx) {
 			tx.executeSql('select * from lists order by date desc', [], function(tx, results) {
 				callback(toArray(results));
@@ -80,8 +73,26 @@ var Database = (function() {
 		});
 	};
 
+	// get list id by date
+	// adds new list if patient DNE
+	obj.getListId = function(date, callback) {
+		db.transaction(function(tx) {
+			tx.executeSql('select * from lists where date=?', [date], function(tx, results) {
+				var len = results.rows.length;
+				if(len > 0) {
+					var id = results.rows.item(0).id;
+					callback(id);
+				} else {
+					tx.executeSql('insert into lists(date) values(?)', [date], function(tx, results) {
+						callback(results.insertId);
+					});
+				}
+			}, errHandler);
+		});
+	}
+
 	// adds a list if it has not been created yet
-	this.addList = function(date, callback) {
+	obj.addList = function(date, callback) {
 		db.transaction(function(tx) {
 			tx.executeSql('select * from lists where date=?', [date], function(tx, results) {
 				var len = results.rows.length;
@@ -103,7 +114,7 @@ var Database = (function() {
 	};
 
 	// gets all patients
-	this.getPatients = function(callback) {
+	obj.getPatients = function(callback) {
 		db.transaction(function(tx) {
 			tx.executeSql('select * from patients where deleted=0 order by last, first, birthday asc', [], function(tx, results) {
 				callback(toArray(results));
@@ -113,9 +124,9 @@ var Database = (function() {
 
 	// get patient id by first, last name and birthday
 	// adds new patient if patient DNE
-	this.getPatientId = function(first, last, birthday, callback) {
-		first = first.toLowerCase();
-		last = last.toLowerCase();
+	obj.getPatientId = function(first, last, birthday, callback) {
+		first = first.toUpperCase();
+		last = last.toUpperCase();
 		db.transaction(function(tx) {
 			tx.executeSql('select * from patients where first=? and last=? and birthday=?', [first, last, birthday], function(tx, results) {
 				var len = results.rows.length;
@@ -135,9 +146,9 @@ var Database = (function() {
 	};
 
 	// updates the patients name and birthday
-	this.updatePatient = function(id, first, last, birthday, callback) {
-		first = first.toLowerCase();
-		last = last.toLowerCase();
+	obj.updatePatient = function(id, first, last, birthday, callback) {
+		first = first.toUpperCase();
+		last = last.toUpperCase();
 		db.transaction(function(tx) {
 			tx.executeSql('update patients set first=?, last=?, birthday=? where id=?', [first, last, birthday, id], function(tx, results) {
 				callback({
@@ -148,14 +159,14 @@ var Database = (function() {
 	};
 
 	// marks the patient as deleted
-	this.deletePatient = function(id) {
+	obj.deletePatient = function(id) {
 		db.transaction(function(tx) {
 			tx.executeSql('update patients set deleted=1 where id=?', [id], null, errHandler);
 		});
 	};
 
 	// gets all location; alpha-order
-	this.getLocations = function(callback) {
+	obj.getLocations = function(callback) {
 		db.transaction(function(tx) {
 			tx.executeSql('select * from locations where deleted=0 order by name asc', [], function(tx, results) {
 				callback(toArray(results));
@@ -165,8 +176,8 @@ var Database = (function() {
 
 	// get location id by name
 	// add new location if location DNE
-	this.getLocationId = function(name, callback) {
-		name = name.toLowerCase();
+	obj.getLocationId = function(name, callback) {
+		name = name.toUpperCase();
 		db.transaction(function(tx) {
 			tx.executeSql('select * from locations where name=?', [name], function(tx, results) {
 				var len = results.rows.length;
@@ -186,8 +197,8 @@ var Database = (function() {
 	};
 
 	// updates the location name
-	this.updateLocation = function(id, name, callback) {
-		name = name.toLowerCase();
+	obj.updateLocation = function(id, name, callback) {
+		name = name.toUpperCase();
 		db.transaction(function(tx) {
 			tx.executeSql('update locations set name=? where id=?', [name, id], function(tx, results) {
 				callback({
@@ -198,14 +209,14 @@ var Database = (function() {
 	};
 
 	// marks the location as deleted
-	this.deleteLocation = function(id) {
+	obj.deleteLocation = function(id) {
 		db.transaction(function(tx) {
 			tx.executeSql('update locations set deleted=1 where id=?', [id], null, errHandler);
 		});
 	};
 
 	// gets all checked out charts for the given list
-	this.getCheckedOutCharts = function(listId, callback) {
+	obj.getCheckedOutCharts = function(listId, callback) {
 		db.transaction(function(tx) {
 			if(typeof(listId) == 'function') {
 				callback = listId;
@@ -225,7 +236,7 @@ var Database = (function() {
 	};
 
 	// gets all checked out chart that have not been returned
-	this.getOutstandingCharts = function(callback) {
+	obj.getOutstandingCharts = function(callback) {
 		db.transaction(function(tx) {
 			tx.executeSql('select C.*, P.first, P.last, P.birthday, L.name as location from checkedOutCharts C, patients P, locations L where C.patientId=P.id and C.locationId=L.id and returnTime=-1 order by P.last, P.first, P.birthday asc', [], function(tx, results) {
 				callback(toArray(results));
@@ -234,9 +245,9 @@ var Database = (function() {
 	};
 
 	// checks out a chart
-	this.checkOutChart = function(listId, first, last, birthday, location, callback) {
-		this.getPatientId(first, last, birthday, function(patientId) {
-			this.getLocationId(location, function(locationId) {
+	obj.checkOutChart = function(listId, first, last, birthday, location, callback) {
+		obj.getPatientId(first, last, birthday, function(patientId) {
+			obj.getLocationId(location, function(locationId) {
 				db.transaction(function(tx) {
 					tx.executeSql('select * from checkedOutCharts where patientId=? and returnTime=-1', [patientId], function(tx, results) {
 						var len = results.rows.length;
@@ -262,7 +273,7 @@ var Database = (function() {
 	};
 
 	// delete the checked out record. as if it was never checked out
-	this.deleteCheckedOutChart = function(id, callback) {
+	obj.deleteCheckedOutChart = function(id, callback) {
 		db.transaction(function(tx) {
 			tx.executeSql('delete from checkedOutCharts where id=?', [id], function(tx, results) {
 				callback({
@@ -273,7 +284,7 @@ var Database = (function() {
 	};
 
 	// returns the chart
-	this.returnChart = function(id, callback) {
+	obj.returnChart = function(id, callback) {
 		db.transaction(function(tx) {
 			var currTime = (new Date()).getTime();
 			tx.executeSql('update checkedOutCharts set returnTime=? where id=?', [currTime, id], function(tx, results) {
@@ -285,7 +296,7 @@ var Database = (function() {
 		});
 	};
 
-	this.unReturnChart = function(id, callback) {
+	obj.unReturnChart = function(id, callback) {
 		db.transaction(function(tx) {
 			tx.executeSql('update checkedOutCharts set returnTime=-1 where id=?', [id], function(tx, results) {
 				callback({
@@ -295,5 +306,5 @@ var Database = (function() {
 		});
 	};
 
-	return this;
+	return obj;
 }());

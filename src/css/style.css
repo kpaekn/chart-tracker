@@ -1,138 +1,24 @@
 @import url('bootstrap.min.css');
-
 @import url('font-awesome.min.css');
-
 @import url('print.css') print;
-header {
-  background-color: #f1f1f1;
-}
-header ul:not(.dropdown-menu) {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-header ul:not(.dropdown-menu) > li {
-  float: left;
-  position: relative;
-}
-header ul:not(.dropdown-menu) > li > a {
-  color: #333;
-  display: block;
-  font-size: 11pt;
-  font-weight: bold;
-  line-height: 30px;
-  padding: 0 10px;
-  text-decoration: none !important;
-  transition: 0.1s linear;
-}
-header ul:not(.dropdown-menu) > li > a.active,
-header ul:not(.dropdown-menu) > li > a:hover {
-  background-color: #08c;
-  color: #fff;
-}
-header .dropdown-menu {
-  right: 0;
-  left: auto;
-}
-.content {
-  padding: 10px;
-}
-.content > h1 {
-  font-size: 29px;
-  font-weight: bold;
-  margin: 0 0 10px;
-}
-.content > form.form-inline > * {
-  vertical-align: bottom;
-  margin: 0.5em 0 0;
-}
-.content > form.form-inline input[type="text"] {
-  text-transform: capitalize;
-  width: 200px;
-}
-.content > form.form-inline .form-group {
-  display: inline-block;
-}
-.content > form.form-inline .form-group label {
-  display: block;
-}
-.content > ul {
-  list-style: none;
-  margin-top: 10px;
-  padding: 0;
-}
-.content > ul li {
-  border-top: 1px solid #f1f1f1;
-  overflow: auto;
-}
-.content > ul li:last-child {
-  border-bottom: 1px solid #f1f1f1;
-}
-.content > ul li > * {
-  display: block;
-  float: left;
-  vertical-align: middle;
-  line-height: 20px;
-}
-.content > ul li .name {
-  padding-left: 0.3em;
-  text-transform: capitalize;
-}
-.content > ul li .name small {
-  color: #888;
-}
-.content > ul li span.name {
-  width: 25%;
-}
-.content > ul li .location {
-  text-transform: capitalize;
-  width: 20%;
-}
-.content > ul li .time {
-  width: 20%;
-}
-.content > ul li .time-arrow {
-  font-size: 14pt;
-  font-weight: bold;
-  line-height: 1;
-  text-align: center;
-  width: 2%;
-}
-.content > ul li .inline-btn {
-  padding: 0 0.1em;
-  text-align: center;
-  width: 25px;
-}
-.content > ul li .inline-btn:hover {
-  background-color: #e5e5e5;
-  border-color: #d8d8d8;
-}
-.content > ul li .inline-btn.return {
-  display: block;
-}
-.content > ul li .inline-btn.un-return {
-  display: none;
-}
-.content > ul li.returned {
-  background-color: #e5e5e5;
-  opacity: 0.7;
-}
-.content > ul li.returned .return {
-  display: none;
-}
-.content > ul li.returned .un-return {
-  display: block;
-}
-.content > ul li.returned .name {
-  text-decoration: line-through;
-}
-.modal input[type="text"] {
-  text-transform: capitalize;
-}
-.typeahead.dropdown-menu {
-  width: 200px;
-  z-index: 10000;
-}
-.typeahead.dropdown-menu li a {
-  text-transform: capitalize;
-}
+header{background-color:#f1f1f1}header ul:not(.dropdown-menu){list-style:none;margin:0;padding:0}header ul:not(.dropdown-menu)>li{float:left;position:relative}header ul:not(.dropdown-menu)>li>a{color:#333;display:block;font-size:11pt;font-weight:bold;line-height:30px;padding:0 10px;text-decoration:none !important;transition:.1s linear}header ul:not(.dropdown-menu)>li>a.active,header ul:not(.dropdown-menu)>li>a:hover{background-color:#08c;color:#fff}
+header .dropdown-menu{right:0;left:auto}
+.content{padding:10px}.content>h1{font-size:29px;font-weight:bold;margin:0 0 10px}
+.content>form.form-inline>*{vertical-align:bottom;margin:.5em 0 0}
+.content>form.form-inline input[type="text"]{text-transform:uppercase;width:200px}
+.content>form.form-inline .form-group{display:inline-block}.content>form.form-inline .form-group label{display:block}
+.content>ul{list-style:none;margin-top:10px;padding:0}.content>ul li{border-top:1px solid #f1f1f1;overflow:auto}.content>ul li:last-child{border-bottom:1px solid #f1f1f1}
+.content>ul li>*{display:block;float:left;vertical-align:middle;line-height:20px}
+.content>ul li .name{padding-left:.3em;text-transform:uppercase}.content>ul li .name small{color:#888}
+.content>ul li span.name{width:25%}
+.content>ul li .location{text-transform:uppercase;width:20%}
+.content>ul li .time{width:20%}
+.content>ul li .time-arrow{font-size:14pt;font-weight:bold;line-height:1;text-align:center;width:2%}
+.content>ul li .inline-btn{padding:0 .1em;text-align:center;width:25px}.content>ul li .inline-btn:hover{background-color:#e5e5e5;border-color:#d8d8d8}
+.content>ul li .inline-btn.return{display:block}
+.content>ul li .inline-btn.un-return{display:none}
+.content>ul li.returned{background-color:#e5e5e5;opacity:.7}.content>ul li.returned .return{display:none}
+.content>ul li.returned .un-return{display:block}
+.content>ul li.returned .name{text-decoration:line-through}
+.modal input[type="text"]{text-transform:uppercase}
+.typeahead.dropdown-menu{width:200px;z-index:10000}.typeahead.dropdown-menu li a{text-transform:uppercase}
