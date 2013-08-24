@@ -1,8 +1,8 @@
-var Content = function(selector) {
-	var content = $(selector);
-	content.header = content.find('h1');
-	content.form = content.find('form');
-	content.list = content.find('ul');
+var Content = function() {
+	content = $();
+	content.header = $('#page-header');
+	content.form = $('#page-form');
+	content.list = $('#page-list');
 
 	var editPatientModal = $('#edit-patient-modal');
 	editPatientModal.first = editPatientModal.find('.first');
@@ -13,6 +13,10 @@ var Content = function(selector) {
 	var editLocationModal = $('#edit-location-modal');
 	editLocationModal.name = editLocationModal.find('.name');
 	editLocationModal.saveBtn = editLocationModal.find('.save');
+
+	var editNotesModal = $('#edit-note-modal');
+	editNotesModal.textarea = editNotesModal.find('.notes');
+	editNotesModal.saveBtn = editNotesModal.find('.save');
 
 	content.loadLists = function() {
 		setHeader('Lists', 'icon-file-text');
@@ -159,7 +163,7 @@ var Content = function(selector) {
 					m.first.val(patient.first);
 					m.last.val(patient.last);
 					m.birthday.val(patient.birthday);
-					m.saveBtn.button('reset');
+					m.saveBtn.button('reset').off('click');
 					m.saveBtn.click(function() {
 						if(checkRequiredInputs([m.first, m.last])) {
 							m.saveBtn.off('click').button('loading');
@@ -195,7 +199,7 @@ var Content = function(selector) {
 					var m = editLocationModal;
 					m.modal('show');
 					m.name.val(location.name);
-					m.saveBtn.button('reset');
+					m.saveBtn.button('reset').off('click');
 					m.saveBtn.click(function() {
 						if(checkRequiredInputs([m.name])) {
 							m.saveBtn.off('click').button('loading');
@@ -223,8 +227,15 @@ var Content = function(selector) {
 	function setForm(url, callback) {
 		content.form.empty();
 		content.form.off('submit');
-		if(url)
-			content.form.load(url, {}, callback);
+		if(url) {
+			content.form.load(url, {}, function() {
+				$('.content').css('top', $('header').outerHeight());
+				if(typeof(callback) == 'function')
+					callback();
+			});	
+		} else {
+			$('.content').css('top', $('header').outerHeight());
+		}
 	}
 
 	var intervalId = 0;
@@ -244,7 +255,7 @@ var Content = function(selector) {
 						content.list.append(toDom(items[i]));
 						i++;
 					}
-					if(target == len) clearInterval(timerId);
+					if(target == len) clearInterval(intervalId);
 				}, 250);
 			}
 		}
@@ -279,11 +290,14 @@ var Content = function(selector) {
 		var unReturnBtn = createInlineBtn('icon-undo', 'un-return', 'Un-Return');
 		var name = $('<span class="name">' + chart.last + ', ' + chart.first + ' <small>' + chart.birthday + '</small></span>');
 		var location = $('<span class="location">' + chart.location + '</span>');
-		var checkOutTime = $('<span class="time text-right">' + dateFormat(chart.checkOutTime, 'm/d/yy-h:mmtt') + '</span>');
+		var checkOutTime = $('<span class="time text-right">' + dateFormat(chart.checkOutTime, 'mm/dd/yy hh:mmtt') + '</span>');
 		var timeArrow = $('<span class="time-arrow">&raquo;</span>');
-		var returnTime = (chart.returnTime == -1) ? 'Not Returned' : dateFormat(chart.returnTime, 'm/d/yy-h:mmtt');
+		var returnTime = (chart.returnTime == -1) ? 'Not Returned' : dateFormat(chart.returnTime, 'mm/dd/yy hh:mmtt');
 			returnTime = $('<span class="time">' + returnTime + '</span>');
-		li.append(deleteBtn, returnBtn, unReturnBtn, name, location, checkOutTime, timeArrow, returnTime);
+		var notesBtn = createInlineBtn('icon-pencil', 'edit-notes', 'Edit Notes');
+		var notes = $('<span class="notes" title="' + chart.notes + '">' + chart.notes + '</span>');
+		notes.tooltip();
+		li.append(deleteBtn, returnBtn, unReturnBtn, name, location, checkOutTime, timeArrow, returnTime, notesBtn, notes);
 
 		if(chart.returnTime !== -1) {
 			li.addClass('returned');
@@ -303,7 +317,7 @@ var Content = function(selector) {
 			Database.returnChart(chart.id, function(resp) {
 				if(resp.success) {
 					li.addClass('returned');
-					returnTime.html(dateFormat(resp.returnTime, 'm/d/yy-h:mmtt'));
+					returnTime.html(dateFormat(resp.returnTime, 'mm/dd/yy hh:mmtt'));
 				}
 			});
 		});
@@ -312,6 +326,26 @@ var Content = function(selector) {
 				if(resp.success) {
 					li.removeClass('returned');
 					returnTime.html('n/a');
+				}
+			});
+		});
+		notesBtn.click(function() {
+			var m = editNotesModal;
+			m.modal('show');
+			m.textarea.val(notes.html());
+			m.saveBtn.button('reset').off('click');
+			m.saveBtn.click(function() {
+				var newNotes = m.textarea.val();
+				if(newNotes == notes.html()) {
+					m.modal('hide');
+				} else {
+					m.saveBtn.button('loading');
+					Database.updateNotes(chart.id, newNotes, function(resp) {
+						if(resp.success) {
+							notes.html(newNotes);
+							m.modal('hide');
+						}
+					});
 				}
 			});
 		});

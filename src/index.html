@@ -5,30 +5,34 @@
 	</head>
 	<body>
 		<header>
+			<div class="menu">
+				<div class="container">
+					<ul id="header-menu">
+						<li><a id="lists" href="#"><i class="icon-file-text"></i> Lists</a></li>
+						<li><a id="outstanding" href="#"><i class="icon-exclamation-sign"></i> Outstanding</a></li>
+						<li><a id="patients" href="#"><i class="icon-user"></i> Paitents</a></li>
+						<li><a id="locations" href="#"><i class="icon-compass"></i> Locations</a></li>
+					</ul>
+					<ul class="pull-right">
+						<li>
+							<a href="#" class="settings-btn dropdown-toggle" data-toggle="dropdown"><i class="icon-cog"></i></a>
+							<ul class="settings-menu dropdown-menu">
+								<li><a class="export" href="#">Export Database</a></li>
+								<li><a class="import" href="#">Import Database</a></li>
+								<li><a class="delete" href="#">Delete Database</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
 			<div class="container">
-				<ul class="header">
-					<li><a id="lists" href="#"><i class="icon-file-text"></i> Lists</a></li>
-					<li><a id="outstanding" href="#"><i class="icon-exclamation-sign"></i> Outstanding</a></li>
-					<li><a id="patients" href="#"><i class="icon-user"></i> Paitents</a></li>
-					<li><a id="locations" href="#"><i class="icon-compass"></i> Locations</a></li>
-				</ul>
-				<ul class="pull-right">
-					<li>
-						<a href="#" class="settings dropdown-toggle" data-toggle="dropdown"><i class="icon-cog"></i></a>
-						<ul class="settings dropdown-menu">
-							<li><a class="export" href="#">Export Database</a></li>
-							<li><a class="import" href="#">Import Database</a></li>
-							<li><a class="delete" href="#">Delete Database</a></li>
-						</ul>
-					</li>
-				</ul>
+				<h1 id="page-header"></h1>
+				<form id="page-form" class="form-inline"></form>
 			</div>
 		</header>
-		<div class="container">
-			<div class="content">
-				<h1></h1>
-				<form class="form-inline"></form>
-				<ul></ul>
+		<div class="content">
+			<div class="container">
+				<ul id="page-list"></ul>
 			</div>
 		</div>
 
@@ -56,7 +60,7 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						<button type="button" class="btn btn-primary save" data-loading-text="Saving...">Save Changes</button>
+						<button type="button" class="btn btn-primary save" data-loading-text="Saving..."><i class="icon-ok"></i> Save Changes</button>
 					</div>
 				</div><!-- /.modal-content -->
 			</div><!-- /.modal-dialog -->
@@ -77,7 +81,29 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						<button type="button" class="btn btn-primary save" data-loading-text="Saving...">Save Changes</button>
+						<button type="button" class="btn btn-primary save" data-loading-text="Saving..."><i class="icon-ok"></i> Save Changes</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
+		<!-- Edit Note Modal -->
+		<div id="edit-note-modal" class="modal fade">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Edit Note</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label class="control-label">Notes</label>
+							<textarea class="form-control notes" rows="5"></textarea>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary save" data-loading-text="Saving..."><i class="icon-ok"></i> Save Changes</button>
 					</div>
 				</div><!-- /.modal-content -->
 			</div><!-- /.modal-dialog -->
@@ -92,8 +118,8 @@
 						<h4 class="modal-title">Delete Database</h4>
 					</div>
 					<div class="modal-body">
-						<p>This will delete ALL information in this program.</p>
-						<p>This action CANNOT be undone.</p>
+						<p>This will delete <strong>ALL</strong> information in this program.</p>
+						<p>This action <strong>CANNOT</strong> be undone.</p>
 						<p>To make sure that you are sure what you are doing, type "DELETE" below, then click the "Delete Database" button.</p>
 						<input class="form-control confirm" type="text" />
 					</div>

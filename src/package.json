@@ -5,10 +5,10 @@
 	"window": {
 		"title": "Chart Tracker",
 		"frame": true,
-		"width": 1000,
+		"width": 992,
 		"height": 700,
-		"min_width": 700,
-		"min_height": 500,
+		"min_width": 992,
+		"min_height": 600,
 		"toolbar": true
 	}
 }

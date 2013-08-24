@@ -17,8 +17,8 @@
 	};
 }(jQuery));
 
-var header = $('.header');
-var content = new Content('.content');
+var header = $('#header-menu');
+var content = new Content();
 
 header.header(function(e) {
 	var id = $(e.currentTarget).attr('id');
@@ -36,9 +36,6 @@ header.header(function(e) {
 			content.loadLocations();
 			break;
 	}
-});
-content.on('listselected', function() {
-	header.header('clear');
 });
 
 header.find('a').first().click();

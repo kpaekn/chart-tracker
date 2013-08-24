@@ -24,13 +24,13 @@ var Database = (function() {
 		tx.executeSql('create table if not exists lists(id integer primary key, date integer)', [], null, errHandler);
 		tx.executeSql('create table if not exists patients(id integer primary key, first varchar(50), last varchar(50), birthday varchar(50), deleted integer default 0)', [], null, errHandler);
 		tx.executeSql('create table if not exists locations(id integer primary key, name varchar(50), deleted integer default 0)', [], null, errHandler);
-		tx.executeSql('create table if not exists checkedOutCharts(id integer primary key, listId integer, patientId integer, locationId integer, checkOutTime integer, returnTime integer default -1)', [], null, errHandler);
+		tx.executeSql('create table if not exists checkedOutCharts(id integer primary key, listId integer, patientId integer, locationId integer, checkOutTime integer, returnTime integer default -1, notes default "")', [], null, errHandler);
 	});
 
 	var obj = {};
 	obj.exportData = function(callback) {
 		db.transaction(function(tx) {
-			tx.executeSql(['select Li.date, P.first, P.last, P.birthday, Lo.name as location, C.checkOutTime, C.returnTime',
+			tx.executeSql(['select Li.date, P.first, P.last, P.birthday, Lo.name as location, C.checkOutTime, C.returnTime, C.notes',
 						   'from lists Li, patients P, locations Lo, checkedOutCharts C',
 						   'where C.listId=Li.id and C.patientId=P.id and C.locationId=Lo.id'].join(' '), [], function(tx, results) {
 				callback(toArray(results));
@@ -47,10 +47,9 @@ var Database = (function() {
 			obj.getListId(data.date, function(listId) {
 				obj.getPatientId(data.first, data.last, data.birthday, function(patientId) {
 					obj.getLocationId(data.location, function(locationId) {
-						console.log('list: ' + listId + ', patient: ' + patientId + ', location: ' + locationId);
 						db.transaction(function(tx) {
-							tx.executeSql('insert into checkedOutCharts(listId, patientId, locationId, checkOutTime, returnTime) values(?,?,?,?,?)',
-													[listId, patientId, locationId, data.checkOutTime, data.returnTime], function(tx, results) {
+							tx.executeSql('insert into checkedOutCharts(listId, patientId, locationId, checkOutTime, returnTime, notes) values(?,?,?,?,?,?)',
+													[listId, patientId, locationId, data.checkOutTime, data.returnTime, data.notes], function(tx, results) {
 								helper(arr, callback);
 							}, errHandler);
 						});
@@ -68,7 +67,6 @@ var Database = (function() {
 		var count = 0;
 		var complete = function() {
 			count++;
-			console.log(count);
 			if(count == 4) {
 				callback();
 			}
@@ -293,9 +291,7 @@ var Database = (function() {
 	obj.deleteCheckedOutChart = function(id, callback) {
 		db.transaction(function(tx) {
 			tx.executeSql('delete from checkedOutCharts where id=?', [id], function(tx, results) {
-				callback({
-					success: true
-				});
+				callback({ success: true });
 			}, errHandler);
 		});
 	};
@@ -316,11 +312,17 @@ var Database = (function() {
 	obj.unReturnChart = function(id, callback) {
 		db.transaction(function(tx) {
 			tx.executeSql('update checkedOutCharts set returnTime=-1 where id=?', [id], function(tx, results) {
-				callback({
-					success: true
-				});
+				callback({ success: true });
 			}, errHandler);
 		});
+	};
+
+	obj.updateNotes = function(id, notes, callback) {
+		db.transaction(function(tx) {
+			tx.executeSql('update checkedOutCharts set notes=? where id=?', [notes, id], function(tx, results) {
+				callback({ success: true });
+			}, errHandler);
+		})
 	};
 
 	return obj;

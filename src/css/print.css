@@ -8,6 +8,16 @@ i[class*="icon-"],
 .content {
   margin-top: -1em !important;
 }
+.content > ul li {
+  border-top: 1px solid #888 !important;
+  padding-bottom: 0.3em;
+  page-break-inside: avoid;
+  page-break-before: auto;
+  page-break-after: auto;
+}
+.content > ul li:last-child {
+  border-bottom: 1px solid #888 !important;
+}
 .content > ul li .name {
   padding-left: 0;
   width: 32% !important;
@@ -20,6 +30,12 @@ i[class*="icon-"],
 }
 .content > ul li .time-arrow {
   width: 3% !important;
+}
+.content > ul li .notes {
+  padding-left: 3em !important;
+  text-overflow: initial !important;
+  white-space: normal !important;
+  width: 100% !important;
 }
 a {
   text-decoration: none;

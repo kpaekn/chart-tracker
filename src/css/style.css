@@ -4,18 +4,26 @@
 
 @import url('print.css') print;
 header {
+  border-bottom: 1px solid #c4c4c4;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+}
+header .menu {
   background-color: #f1f1f1;
 }
-header ul:not(.dropdown-menu) {
+header .menu ul:not(.dropdown-menu) {
   list-style: none;
   margin: 0;
   padding: 0;
 }
-header ul:not(.dropdown-menu) > li {
+header .menu ul:not(.dropdown-menu) > li {
   float: left;
   position: relative;
 }
-header ul:not(.dropdown-menu) > li > a {
+header .menu ul:not(.dropdown-menu) > li > a {
   color: #333;
   display: block;
   font-size: 11pt;
@@ -25,105 +33,117 @@ header ul:not(.dropdown-menu) > li > a {
   text-decoration: none !important;
   transition: 0.1s linear;
 }
-header ul:not(.dropdown-menu) > li > a.active,
-header ul:not(.dropdown-menu) > li > a:hover {
+header .menu ul:not(.dropdown-menu) > li > a.active,
+header .menu ul:not(.dropdown-menu) > li > a:hover {
   background-color: #08c;
   color: #fff;
 }
-header .dropdown-menu {
+header .menu .dropdown-menu {
   right: 0;
   left: auto;
 }
-.content {
-  padding: 10px;
-}
-.content > h1 {
+header #page-header {
   font-size: 29px;
   font-weight: bold;
-  margin: 0 0 10px;
+  margin: 10px 0;
 }
-.content > form.form-inline > * {
+header #page-form {
+  margin-bottom: 10px;
+}
+header #page-form.form-inline > * {
   vertical-align: bottom;
   margin: 0.5em 0 0;
 }
-.content > form.form-inline input[type="text"] {
+header #page-form.form-inline input[type="text"] {
   text-transform: uppercase;
   width: 200px;
 }
-.content > form.form-inline .form-group {
+header #page-form.form-inline .form-group {
   display: inline-block;
 }
-.content > form.form-inline .form-group label {
+header #page-form.form-inline .form-group label {
   display: block;
 }
-.content > ul {
+.content {
+  overflow: auto;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+.content #page-list {
   list-style: none;
-  margin-top: 10px;
   padding: 0;
 }
-.content > ul li {
+.content #page-list li {
   border-top: 1px solid #f1f1f1;
   overflow: auto;
 }
-.content > ul li:last-child {
+.content #page-list li:last-child {
   border-bottom: 1px solid #f1f1f1;
 }
-.content > ul li > * {
+.content #page-list li > * {
   display: block;
   float: left;
   vertical-align: middle;
   line-height: 20px;
 }
-.content > ul li .name {
+.content #page-list li .name {
   padding-left: 0.3em;
   text-transform: uppercase;
+  width: 200px;
 }
-.content > ul li .name small {
+.content #page-list li .name small {
   color: #888;
 }
-.content > ul li span.name {
-  width: 25%;
-}
-.content > ul li .location {
+.content #page-list li .location {
   text-transform: uppercase;
-  width: 20%;
+  width: 200px;
 }
-.content > ul li .time {
-  width: 20%;
+.content #page-list li .time {
+  font-family: 'courier new';
+  font-size: 9pt;
+  width: 115px;
 }
-.content > ul li .time-arrow {
+.content #page-list li .time-arrow {
   font-size: 14pt;
   font-weight: bold;
   line-height: 1;
   text-align: center;
-  width: 2%;
+  width: 20px;
 }
-.content > ul li .inline-btn {
+.content #page-list li .notes {
+  float: none;
+  overflow: hidden;
+  padding-left: 0.3em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.content #page-list li .inline-btn {
   padding: 0 0.1em;
   text-align: center;
-  width: 25px;
+  width: 20px;
 }
-.content > ul li .inline-btn:hover {
+.content #page-list li .inline-btn:hover {
   background-color: #e5e5e5;
   border-color: #d8d8d8;
 }
-.content > ul li .inline-btn.return {
+.content #page-list li .inline-btn.return {
   display: block;
 }
-.content > ul li .inline-btn.un-return {
+.content #page-list li .inline-btn.un-return {
   display: none;
 }
-.content > ul li.returned {
+.content #page-list li.returned {
   background-color: #e5e5e5;
   opacity: 0.7;
 }
-.content > ul li.returned .return {
+.content #page-list li.returned .return {
   display: none;
 }
-.content > ul li.returned .un-return {
+.content #page-list li.returned .un-return {
   display: block;
 }
-.content > ul li.returned .name {
+.content #page-list li.returned .name {
   text-decoration: line-through;
 }
 body.modal-open {
