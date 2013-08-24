@@ -13,10 +13,8 @@ $.alert = (function() {
 
 	// custom css
 	modal.dialog.css('width', 300);
-	modal.content.css('border-radius', 0);
 	modal.body.css('padding', 10);
 	modal.footer.css({
-		'background-color': '#f1f1f1',
 		'margin': 0,
 		'padding': 10
 	});

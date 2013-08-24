@@ -48,12 +48,7 @@ var deleteDatabaseModal = $('#delete-database-modal');
 deleteDatabaseModal.confirm = deleteDatabaseModal.find('.confirm');
 deleteDatabaseModal.deleteBtn = deleteDatabaseModal.find('.delete');
 
-var settingsLink = $('a.settings');
-settingsLink.find('a').click(function(e) {
-	e.preventDefault();
-});
-
-var settingsMenu = $('ul.settings');
+var settingsMenu = $('#settings-menu');
 settingsMenu.export = settingsMenu.find('.export');
 settingsMenu.import = settingsMenu.find('.import');
 settingsMenu.delete = settingsMenu.find('.delete');
