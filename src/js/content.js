@@ -1,8 +1,8 @@
 var Content = function() {
-	content = $();
-	content.header = $('#page-header');
-	content.form = $('#page-form');
-	content.list = $('#page-list');
+	obj = $();
+	pageHeader = $('#page-header');
+	pageForm = $('#page-form');
+	pageList = $('#page-list');
 
 	var editPatientModal = $('#edit-patient-modal');
 	editPatientModal.first = editPatientModal.find('.first');
@@ -18,18 +18,20 @@ var Content = function() {
 	editNotesModal.textarea = editNotesModal.find('.notes');
 	editNotesModal.saveBtn = editNotesModal.find('.save');
 
-	content.loadLists = function() {
+	$(window).resize(recalcHeaderHeight);
+
+	obj.loadLists = function() {
 		setHeader('Lists', 'icon-file-text');
 		setForm('forms/lists.html', function() {
 			var date = new Date(), i;
-			content.form.date = content.form.find('.date');
-			content.form.date.selectpicker();
-			content.form.submit(function(e) {
+			pageForm.date = pageForm.find('.date');
+			pageForm.date.selectpicker();
+			pageForm.submit(function(e) {
 				e.preventDefault();
-				var val = content.form.date.val();
+				var val = pageForm.date.val();
 				Database.addList(val, function(resp) {
 					if(resp.success) {
-						content.loadLists();
+						obj.loadLists();
 					} else {
 						$.alert.show('Failed to create list: ' + resp.message);
 					}
@@ -46,23 +48,23 @@ var Content = function() {
 				li.a = li.find('a');
 				li.a.click(function(e) {
 					e.preventDefault();
-					content.loadList(list.id, date);
+					obj.loadList(list.id, date);
 				});
 				return li;
 			});
 		});
 	};
 
-	content.loadList = function(id, date) {
-		content.trigger('listselected');
+	obj.loadList = function(id, date) {
+		obj.trigger('listselected');
 		setHeader(date.format('m/d/yyyy') + ' - ' + date.format('dddd'), 'icon-calendar');
 		setForm('forms/list.html', function() {
-			var form = content.form;
+			var form = pageForm;
 			form.first = form.find('.first');
 			form.last = form.find('.last').focus();
 			form.birthday = form.find('.birthday');
 			form.location = form.find('.location');
-			form.printBtn = content.form.find('.print');
+			form.printBtn = pageForm.find('.print');
 			form.printBtn.click(function(e) {
 				e.preventDefault();
 				document.title = 'List for ' + date.format('m-d-yyyy');
@@ -109,7 +111,7 @@ var Content = function() {
 				if(checkRequiredInputs([form.last, form.first, form.location])) {
 					Database.checkOutChart(id, form.first.val(), form.last.val(), form.birthday.val(), form.location.val(), function(resp) {
 						if(resp.success) {
-							content.loadList(id, date);
+							obj.loadList(id, date);
 						} else {
 							$.alert.show('Failed to check out chart: ' + resp.message);
 						}
@@ -123,15 +125,15 @@ var Content = function() {
 		});
 	};
 
-	content.loadOutstanding = function() {
+	obj.loadOutstanding = function() {
 		setHeader('Outstanding Charts', 'icon-exclamation-sign');
 		setForm('forms/outstanding.html', function() {
-			content.form.printBtn = content.form.find('.print');
-			content.form.printBtn.click(function(e) {
+			pageForm.printBtn = pageForm.find('.print');
+			pageForm.printBtn.click(function(e) {
 				document.title = 'Outstanding Charts';
 				window.print();
 			});
-			content.form.submit(function(e) {
+			pageForm.submit(function(e) {
 				e.preventDefault();
 			});
 		});
@@ -140,7 +142,7 @@ var Content = function() {
 		});
 	};
 
-	content.loadPatients = function() {
+	obj.loadPatients = function() {
 		setHeader('Patients', 'icon-user');
 		setForm();
 
@@ -179,7 +181,7 @@ var Content = function() {
 		});
 	};
 
-	content.loadLocations = function() {
+	obj.loadLocations = function() {
 		setHeader('Locations', 'icon-compass');
 		setForm();
 		Database.getLocations(function(locations) {
@@ -221,38 +223,37 @@ var Content = function() {
 		if(icon)
 			html = '<i class="' + icon + '"></i> ';
 		html += text;
-		content.header.html(html);
+		pageHeader.html(html);
+		recalcHeaderHeight();
 	}
 
 	function setForm(url, callback) {
-		content.form.empty();
-		content.form.off('submit');
+		pageForm.empty();
+		pageForm.off('submit');
 		if(url) {
-			content.form.load(url, {}, function() {
-				$('.content').css('top', $('header').outerHeight());
+			pageForm.load(url, {}, function() {
 				if(typeof(callback) == 'function')
 					callback();
 			});	
-		} else {
-			$('.content').css('top', $('header').outerHeight());
 		}
+		setTimeout(recalcHeaderHeight, 100);
 	}
 
 	var intervalId = 0;
 	function setList(items, toDom){
 		clearInterval(intervalId);
-		content.list.empty();
+		pageList.empty();
 		if(items) {
 			var len = items.length, i, NUM = 10;
 			var target = Math.min(NUM, len);
 			for(i = 0; i < target; i++) {
-				content.list.append(toDom(items[i]));
+				pageList.append(toDom(items[i]));
 			}
 			if(len > target) {
 				intervalId = setInterval(function() {
 					target = Math.min(target + NUM, len);
 					while(i < target) {
-						content.list.append(toDom(items[i]));
+						pageList.append(toDom(items[i]));
 						i++;
 					}
 					if(target == len) clearInterval(intervalId);
@@ -296,7 +297,9 @@ var Content = function() {
 			returnTime = $('<span class="time">' + returnTime + '</span>');
 		var notesBtn = createInlineBtn('icon-pencil', 'edit-notes', 'Edit Notes');
 		var notes = $('<span class="notes" title="' + chart.notes + '">' + chart.notes + '</span>');
-		notes.tooltip();
+		notes.tooltip({
+			placement: 'left'
+		});
 		li.append(deleteBtn, returnBtn, unReturnBtn, name, location, checkOutTime, timeArrow, returnTime, notesBtn, notes);
 
 		if(chart.returnTime !== -1) {
@@ -357,5 +360,15 @@ var Content = function() {
 		return $('<span class="inline-btn ' + _class + '" title="' + tooltip + '"><i class="' + icon + '"></i></span>').tooltip();
 	}
 
-	return content;
+	var header = $('header');
+	var content = $('.content');
+	function recalcHeaderHeight() {
+		var headerHeight = header.outerHeight();
+		var top = content.position().top;
+		if(headerHeight !== top) {
+			content.css('top', headerHeight);
+		}
+	}
+
+	return obj;
 };

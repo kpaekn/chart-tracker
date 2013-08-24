@@ -146,6 +146,11 @@ header #page-form.form-inline .form-group label {
 .content #page-list li.returned .name {
   text-decoration: line-through;
 }
+.container {
+  max-width: 100%;
+  width: 100%;
+  padding: 0 10px;
+}
 body.modal-open {
   margin-right: 0;
 }
