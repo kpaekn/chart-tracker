@@ -6,10 +6,6 @@
 header {
   border-bottom: 1px solid #c4c4c4;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  position: absolute;
-  top: 0;
-  width: 100%;
-  z-index: 10;
 }
 header .menu {
   background-color: #f1f1f1;
@@ -66,9 +62,6 @@ header #page-form.form-inline .form-group label {
 }
 .content {
   overflow: auto;
-  position: absolute;
-  bottom: 0;
-  width: 100%;
 }
 .content #page-list {
   list-style: none;
