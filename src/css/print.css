@@ -1,37 +1,40 @@
 header,
-.content form,
 i[class*="icon-"],
 .inline-btn-group,
 .inline-btn {
   display: none !important;
 }
+.print-bypass {
+  opacity: 0;
+  position: absolute;
+}
 .content {
   margin-top: -1em !important;
 }
-.content > ul li {
-  border-top: 1px solid #888 !important;
+.content .page-header {
+  display: block !important;
+}
+.content #page-list li {
   padding-bottom: 0.3em;
   page-break-inside: avoid;
   page-break-before: auto;
   page-break-after: auto;
 }
-.content > ul li:last-child {
-  border-bottom: 1px solid #888 !important;
-}
-.content > ul li .name {
+.content #page-list li .name {
   padding-left: 0;
   width: 32% !important;
 }
-.content > ul li .location {
+.content #page-list li .location {
   width: 25% !important;
 }
-.content > ul li .time {
+.content #page-list li .time {
   width: 20% !important;
 }
-.content > ul li .time-arrow {
+.content #page-list li .time-arrow {
+  line-height: .75 !important;
   width: 3% !important;
 }
-.content > ul li .notes {
+.content #page-list li .notes {
   padding-left: 3em !important;
   text-overflow: initial !important;
   white-space: normal !important;

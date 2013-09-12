@@ -1,16 +1,17 @@
- header, .content form, i[class*="icon-"], .inline-btn-group, .inline-btn {
+header, i[class*="icon-"], .inline-btn-group, .inline-btn {
 	display: none !important;
+}
+.print-bypass {
+	opacity: 0;
+	position: absolute;
 }
 .content {
 	margin-top: -1em !important;
-	> ul {
+	.page-header {
+		display: block !important;
+	}
+	#page-list {
 		li {
-			
-			border-top: 1px solid #888 !important;
-			&:last-child {
-				border-bottom: 1px solid #888 !important;
-			}
-
 			padding-bottom: 0.3em;
 			page-break-inside: avoid;
 			page-break-before: auto;
@@ -26,6 +27,7 @@
 				width: 20% !important;
 			}
 			.time-arrow {
+				line-height: .75 !important;
 				width: 3% !important;
 			}
 			.notes {

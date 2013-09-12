@@ -1,6 +1,6 @@
 var Content = function() {
 	obj = $();
-	pageHeader = $('#page-header');
+	pageHeader = $('.page-header');
 	pageForm = $('#page-form');
 	pageList = $('#page-list');
 
@@ -67,7 +67,6 @@ var Content = function() {
 			form.printBtn = pageForm.find('.print');
 			form.printBtn.click(function(e) {
 				e.preventDefault();
-				document.title = 'List for ' + date.format('m-d-yyyy');
 				window.print();
 			});
 
@@ -130,7 +129,6 @@ var Content = function() {
 		setForm('forms/outstanding.html', function() {
 			pageForm.printBtn = pageForm.find('.print');
 			pageForm.printBtn.click(function(e) {
-				document.title = 'Outstanding Charts';
 				window.print();
 			});
 			pageForm.submit(function(e) {
@@ -357,7 +355,9 @@ var Content = function() {
 	}
 
 	function createInlineBtn(icon, _class, tooltip) {
-		return $('<span class="inline-btn ' + _class + '" title="' + tooltip + '"><i class="' + icon + '"></i></span>').tooltip();
+		return $('<span class="inline-btn ' + _class + '" title="' + tooltip + '"><i class="' + icon + '"></i></span>').tooltip({
+			placement: 'top'
+		});
 	}
 
 	var header = $('header');
@@ -366,7 +366,7 @@ var Content = function() {
 		var headerHeight = header.outerHeight();
 		var top = content.position().top;
 		if(headerHeight !== top) {
-			content.css('top', headerHeight);
+			content.css('margin-top', headerHeight - 20);
 		}
 	}
 

@@ -1,14 +1,19 @@
 @import url('bootstrap.min.css');
 @import url('font-awesome.min.css');
-@import url('print.css') print;
 
 @header-height: 30px;
 
+.page-header {
+	border-width: 0;
+	font-size: 29px;
+	font-weight: bold;
+	margin: 10px 0;
+	padding: 0;
+}
 header {
-	border-bottom: 1px solid #c4c4c4;
 	box-shadow: 0 0 10px rgba(0,0,0,0.2);
 	
-	position: absolute;
+	position: fixed;
 	top: 0;
 	width: 100%;
 	z-index: 10;
@@ -42,11 +47,6 @@ header {
 			left: auto;
 		}
 	}
-	#page-header {
-		font-size: 29px;
-		font-weight: bold;
-		margin: 10px 0;
-	}
 	#page-form {
 		margin-bottom: 10px;
 		&.form-inline {
@@ -69,9 +69,10 @@ header {
 }
 .content {
 	overflow: auto;
-	position: absolute;
-	bottom: 0;
 	width: 100%;
+	.page-header {
+		display: none;
+	}
 	#page-list {
 		list-style: none;
 		padding: 0;
@@ -134,8 +135,8 @@ header {
 				}
 			}
 			&.returned {
-				background-color: #e5e5e5;
-				opacity: 0.7;
+				background-color: #f1f1f1;
+				color: #888;
 				.return {
 					display: none;
 				}
@@ -172,3 +173,5 @@ body.modal-open {
 		text-transform: uppercase;
 	}
 }
+
+@import url('print.css') print;
