@@ -155,7 +155,7 @@ var Content = function() {
 					li.slideUp(200, function() {
 						li.remove();
 					});
-				}).tooltip();
+				});
 				name.click(function(e) {
 					e.preventDefault();
 					var m = editPatientModal;
@@ -193,7 +193,7 @@ var Content = function() {
 					li.slideUp(200, function() {
 						li.remove();
 					});
-				}).tooltip();
+				});
 				name.click(function(e) {
 					e.preventDefault();
 					var m = editLocationModal;
@@ -294,17 +294,13 @@ var Content = function() {
 		var returnTime = (chart.returnTime == -1) ? 'Not Returned' : dateFormat(chart.returnTime, 'mm/dd/yy hh:mmtt');
 			returnTime = $('<span class="time">' + returnTime + '</span>');
 		var notesBtn = createInlineBtn('icon-pencil', 'edit-notes', 'Edit Notes');
-		var notes = $('<span class="notes" title="' + chart.notes + '">' + chart.notes + '</span>');
-		notes.tooltip({
-			placement: 'left'
-		});
+		var notes = $('<span class="notes">' + chart.notes + '</span>');
 		li.append(deleteBtn, returnBtn, unReturnBtn, name, location, checkOutTime, timeArrow, returnTime, notesBtn, notes);
 
 		if(chart.returnTime !== -1) {
 			li.addClass('returned');
 		}
 
-		li.find('.inline-btn').tooltip();
 		deleteBtn.click(function() {
 			Database.deleteCheckedOutChart(chart.id, function(resp) {
 				if(resp.success) {
@@ -363,6 +359,7 @@ var Content = function() {
 	var header = $('header');
 	var content = $('.content');
 	function recalcHeaderHeight() {
+		var windowHeight = $(window).height();
 		var headerHeight = header.outerHeight();
 		var top = content.position().top;
 		if(headerHeight !== top) {
